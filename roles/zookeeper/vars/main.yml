@@ -8,4 +8,5 @@ tick_time: 2000
 
 zookeeper_dir: /usr/lib/zookeeper
 zookeeper_data_dir: /var/lib/zookeeper
+zookeeper_log_dir: /var/log/zookeeper
 zookeeper_conf_dir: /etc/zookeeper/conf

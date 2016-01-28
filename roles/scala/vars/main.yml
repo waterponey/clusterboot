@@ -5,7 +5,7 @@ sbt_archive_file: "{{sbt_version_name}}.tgz"
 sbt_download_url: "https://dl.bintray.com/sbt/native-packages/sbt/{{sbt_version}}/{{sbt_archive_file}}"
 
 sbt_lib_path: "/usr/lib"
-sbt_lib_path_target: "{{sbt_lib_path}}/{{sbt_version_name}}"
+sbt_lib_path_target: "{{sbt_lib_path}}/sbt"
 sbt_link_target: "/usr/bin/sbt"
 
 scala_version: "2.11.5"

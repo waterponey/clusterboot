@@ -2,16 +2,7 @@
   yum: name="@Development tools" state=present
 
 - name: Enable EPEL repositories
-  yum: name=http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm state=present
-
-- name: Enable CDH5 repository
-  yum:
-
-- name: Enable Mesosphere repository
-  yum:
-  
-- name: Upgrade all
-  yum: name=* state=latest
+  yum: name="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" state=present
 
 - name: Install required packages
   yum: name={{ item }} state=latest
@@ -22,7 +13,7 @@
     - htop
     - atop
     - iotop
-    - ifotop
+    - iftop
     - wget
     - unzip
     - curl
@@ -31,6 +22,9 @@
     - python-setuptools
     - python-pip
     - libgfortran
+
+- name: Upgrade all
+  yum: name=* state=latest
 
 - name: Disable selinux
   selinux: state=disabled

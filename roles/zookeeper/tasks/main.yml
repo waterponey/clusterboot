@@ -1,6 +1,15 @@
 ---
-- name: Install zookeeper
+- name: Cloudera repo
+  yum: name=https://archive.cloudera.com/cdh5/one-click-install/redhat/7/x86_64/cloudera-cdh-5-0.x86_64.rpm state=present
+
+- name: Zookeeper package
   yum: name=zookeeper-server state=latest
+
+- name: Ensure data directory exists
+  file: path={{zookeeper_data_dir}}/version-2 state=directory recurse=yes owner=zookeeper group=zookeeper
+
+- name: Ensure log directory exists
+  file: path={{zookeeper_log_dir}} state=directory recurse=yes owner=zookeeper group=zookeeper
 
 - name: Write myid file.
   template: src=myid.j2 dest={{zookeeper_data_dir}}/myid owner=zookeeper group=zookeeper
@@ -9,4 +18,4 @@
   template: src=zoo.cfg.j2 dest={{zookeeper_conf_dir}}/zoo.cfg owner=zookeeper group=zookeeper
 
 - name: Start zookeeper
-  service: name=zookeeper-server state=restarted 
+  service: name=zookeeper-server state=restarted enabled=yes
