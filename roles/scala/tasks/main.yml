@@ -27,22 +27,16 @@
   unarchive: src=/opt/src/{{scala_archive_file}} dest={{scala_lib_path}} copy=no
 
 - name: Link scala
-  command: ln -sf {{scala_lib_path_target}}/bin/scala {{scala_link_target}}
+  file: state=link src={{scala_lib_path_target}}/bin/scala dest={{scala_link_target}}/scala
 
 - name: Link scalac
-  command: ln -sf {{scala_lib_path_target}}/bin/scalac {{scala_link_target}}
+  file: state=link src={{scala_lib_path_target}}/bin/scalac dest={{scala_link_target}}/scalac
 
 - name: Link fsc
-  command: ln -sf {{scala_lib_path_target}}/bin/fsc {{scala_link_target}}
-
-- name: Link sbaz
-  command: ln -sf {{scala_lib_path_target}}/bin/sbaz {{scala_link_target}}
-
-- name: Link sbaz-setup
-  command: ln -sf {{scala_lib_path_target}}/bin/sbaz-setup {{scala_link_target}}
+  file: state=link src={{scala_lib_path_target}}/bin/fsc dest={{scala_link_target}}/fsc
 
 - name: Link scaladoc
-  command: ln -sf {{scala_lib_path_target}}/bin/scaladoc {{scala_link_target}}
+  file: state=link src={{scala_lib_path_target}}/bin/scaladoc dest={{scala_link_target}}/scaladoc
 
 - name: Link scalap
-  command: ln -sf {{scala_lib_path_target}}/bin/scalap {{scala_link_target}}
+  file: state=link src={{scala_lib_path_target}}/bin/scalap dest={{scala_link_target}}/scalap
