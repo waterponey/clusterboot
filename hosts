@@ -1,0 +1,18 @@
+[masters]
+master01 zoo_id=1
+master02 zoo_id=2
+
+[slaves]
+node01
+node02
+node03
+node04
+node05
+node06
+node07
+node08
+node09
+node10
+node11
+node12
+

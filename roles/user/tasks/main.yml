@@ -1,0 +1,38 @@
+---
+- name: create admin group
+  group: name=admin state=present
+
+- name: add user
+  user: name={{username}}
+        state=present
+        groups=admin
+        generate_ssh_key=yes
+        ssh_key_bits=2048
+        ssh_key_comment={{username}}@{{ansible_hostname}}
+        ssh_key_file=.ssh/{{ansible_hostname}}
+        ssh_key_passphrase=
+        ssh_key_type=rsa
+
+- name: admin group must have passwordless sudo rights
+  lineinfile: "dest=/etc/sudoers
+              state=present
+              regexp='^%admin'
+              line='%admin          ALL=(ALL)       NOPASSWD: ALL'
+              insertafter='^# %wheel'
+              validate='visudo -cf %s'"
+
+- name: deploy local ssh key
+  authorized_key: user={{username}}
+                  key="{{ lookup('file', '/home/' + username + '/.ssh/id_rsa.pub') }}"
+
+- name: fetch newly deployed key
+  fetch: src=/home/{{username}}/.ssh/{{ansible_hostname}}.pub 
+         dest=/home/{{username}}/.ssh 
+         flat=yes
+         validate_checksum=no
+
+- name: add all ssh keys
+  authorized_key:
+    user=burq
+    key="{{ lookup('file', '/home/burq/.ssh/' + item + '.pub') }}"
+  with_items: "{{groups['all']}}"

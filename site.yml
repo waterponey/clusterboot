@@ -1,0 +1,17 @@
+---
+- hosts: all
+  roles:
+    - common
+
+#- hosts: masters
+#  roles:
+#    - haproxy
+#    - zookeeper
+#    - mesos
+#
+#- hosts: slaves
+#  roles: 
+#    - docker
+#    - mesos
+#    - hdfs-common
+#    - hdfs-datanode

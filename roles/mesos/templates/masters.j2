@@ -1,0 +1,6 @@
+# Mesos master
+# Ansible managed
+{% for host in groups['masters'] %}
+{{ hostvars[host]['ansible_' + iface]['ipv4']['address'] }}
+{% endfor %}
+

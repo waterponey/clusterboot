@@ -1,0 +1,48 @@
+---
+- name: Create /opt/src
+  file: path=/opt/src state=directory recurse=yes
+
+- name: Create sbt lib dir
+  file: path={{sbt_lib_path}} state=directory recurse=yes
+
+- name: Download sbt v{{sbt_version}}
+  get_url: url={{sbt_download_url}} 
+    dest=/opt/src/{{sbt_archive_file}}
+
+- name: Unpack sbt
+  unarchive: src=/opt/src/{{sbt_archive_file}} dest={{sbt_lib_path}} copy=no
+
+- name: Link sbt
+  file: state=link src={{sbt_lib_path_target}}/bin/sbt dest={{sbt_link_target}}
+
+
+- name: Create scala lib dir
+  file: path={{scala_lib_path_target}} state=directory recurse=yes
+
+- name: Download scala v{{scala_version}}
+  get_url: url={{scala_download_url}} 
+    dest=/opt/src/{{scala_archive_file}}
+
+- name: Unpack scala
+  unarchive: src=/opt/src/{{scala_archive_file}} dest={{scala_lib_path}} copy=no
+
+- name: Link scala
+  command: ln -sf {{scala_lib_path_target}}/bin/scala {{scala_link_target}}
+
+- name: Link scalac
+  command: ln -sf {{scala_lib_path_target}}/bin/scalac {{scala_link_target}}
+
+- name: Link fsc
+  command: ln -sf {{scala_lib_path_target}}/bin/fsc {{scala_link_target}}
+
+- name: Link sbaz
+  command: ln -sf {{scala_lib_path_target}}/bin/sbaz {{scala_link_target}}
+
+- name: Link sbaz-setup
+  command: ln -sf {{scala_lib_path_target}}/bin/sbaz-setup {{scala_link_target}}
+
+- name: Link scaladoc
+  command: ln -sf {{scala_lib_path_target}}/bin/scaladoc {{scala_link_target}}
+
+- name: Link scalap
+  command: ln -sf {{scala_lib_path_target}}/bin/scalap {{scala_link_target}}

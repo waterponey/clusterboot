@@ -1,0 +1,28 @@
+---
+- name: Create sbt lib directory
+  
+- name: Download sbt
+  
+- name: Install mesos from repo
+  yum: name={{ item }} state=latest
+  with_items:
+    - mesos
+    - marathon
+
+- name: Setup default config
+  template: src=conf-mesos.j2 dest=/etc/default/mesos
+  notify:
+    - Restart master
+    - Restart slave
+
+- name: Setup master config
+  template: src=conf-mesos-master.j2 dest=/etc/default/mesos-master
+  when: mesos_role == "master"
+  notify:
+    - Restart master
+
+- name: Setup slave config
+  template: src=conf-mesos-slave.j2 dest=/etc/default/mesos-slave
+  when: mesos_role == "slave"
+  notify:
+    - Restart slave

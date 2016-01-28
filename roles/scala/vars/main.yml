@@ -1,0 +1,18 @@
+---
+sbt_version: "0.13.7"
+sbt_version_name: "sbt-{{sbt_version}}"
+sbt_archive_file: "{{sbt_version_name}}.tgz"
+sbt_download_url: "https://dl.bintray.com/sbt/native-packages/sbt/{{sbt_version}}/{{sbt_archive_file}}"
+
+sbt_lib_path: "/usr/lib"
+sbt_lib_path_target: "{{sbt_lib_path}}/{{sbt_version_name}}"
+sbt_link_target: "/usr/bin/sbt"
+
+scala_version: "2.11.5"
+scala_version_name: "scala-{{scala_version}}"
+scala_archive_file: "{{scala_version_name}}.tgz"
+scala_download_url: "http://www.scala-lang.org/files/archive/{{scala_archive_file}}"
+
+scala_lib_path: "/usr/lib/scala"
+scala_lib_path_target: "{{scala_lib_path}}/{{scala_version_name}}"
+scala_link_target: "/usr/bin"

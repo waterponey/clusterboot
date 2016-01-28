@@ -1,0 +1,11 @@
+---
+zookeeper_version: 3.4.5
+
+client_port: 2181
+init_limit: 5
+sync_limit: 2
+tick_time: 2000
+
+zookeeper_dir: /usr/lib/zookeeper
+zookeeper_data_dir: /var/lib/zookeeper
+zookeeper_conf_dir: /etc/zookeeper/conf

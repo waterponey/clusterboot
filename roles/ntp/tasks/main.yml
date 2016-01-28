@@ -1,0 +1,9 @@
+###
+- name: install ntp daemon
+  yum: name=ntp status=latest
+
+- name: setup configuration file
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+
+- name: launch ntp service
+  service: name=ntp state=restarted enabled=yes
