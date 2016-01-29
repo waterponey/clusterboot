@@ -1,28 +1,32 @@
 ---
-- name: Create sbt lib directory
-  
-- name: Download sbt
+- name: Ensure presence of adequate repository
+  yum: name=http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm state=present
   
 - name: Install mesos from repo
-  yum: name={{ item }} state=latest
-  with_items:
-    - mesos
-    - marathon
+  yum: name=mesos state=latest
 
-- name: Setup default config
-  template: src=conf-mesos.j2 dest=/etc/default/mesos
+- name: Install marathon on masters
+  yum: name=marathon state=latest
+  when: "'masters' in group_names"
+
+- name: Setup zookeeper connexion
+  template: src=zk.j2 dest=/etc/mesos/zk
+
+- name: Setup quorum
+  template: src=quorum.j2 dest=/etc/mesos-master/quorum
+  when: "'masters' in group_names"
   notify:
     - Restart master
-    - Restart slave
+    - Restart marathon
 
-- name: Setup master config
-  template: src=conf-mesos-master.j2 dest=/etc/default/mesos-master
-  when: mesos_role == "master"
+- name: Disable mesos-slave for masters
+  service: name=mesos-slave state=stopped enabled=no
+  when: "'masters' in group_names"
   notify:
     - Restart master
 
-- name: Setup slave config
-  template: src=conf-mesos-slave.j2 dest=/etc/default/mesos-slave
-  when: mesos_role == "slave"
+- name: Disable mesos-master for slaves
+  service: name=mesos-master state=stopped enabled=no
+  when: "'slaves' in group_names"
   notify:
     - Restart slave
