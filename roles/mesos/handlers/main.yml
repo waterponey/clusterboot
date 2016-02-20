@@ -1,9 +1,0 @@
----
-- name: Restart master
-  service: name=mesos-master state=restarted
-
-- name: Restart marathon
-  service: name=marathon state=restarted
-
-- name: Restart slave
-  service: name=mesos-slave state=restarted

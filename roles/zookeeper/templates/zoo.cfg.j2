@@ -1,9 +1,11 @@
 tickTime={{ tick_time }}
 dataDir={{ zookeeper_data_dir }}
 dataLogDir={{ zookeeper_data_dir }}
-clientPort={{ client_port }}
+clientPort={{ zookeeper_client_port }}
 initLimit={{ init_limit }}
 syncLimit={{ sync_limit }}
+maxClientCnxns=200
+maxSessionTimeout=180000
 {% for server in groups.masters %}
 server.{{ hostvars[server].zoo_id }}={{server}}:2888:3888
 {% endfor %}

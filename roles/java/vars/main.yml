@@ -1,0 +1,4 @@
+---
+oracle_jdk_archive_file: "jdk-8u60-linux-x64.tar.gz"
+oracle_jdk_download_url: "http://download.oracle.com/otn/java/jdk/8u60-b27/jdk-8u60-linux-x64.tar.gz"
+java_lib_path: "/usr/java"

@@ -1,0 +1,10 @@
+---
+spark_version: "1.6.0"
+spark_version_name: "spark-{{spark_version}}-bin-hadoop2.6"
+spark_archive_file: "{{spark_version_name}}.tgz"
+spark_download_url: "http://d3kbcqa49mib13.cloudfront.net/{{spark_archive_file}}"
+
+spark_lib_path: "/usr/lib/spark"
+spark_lib_path_target: "{{spark_lib_path}}/{{spark_version_name}}"
+spark_link_target: "/usr/bin"
+

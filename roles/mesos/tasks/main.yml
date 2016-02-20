@@ -1,6 +1,8 @@
 ---
 - name: Ensure presence of adequate repository
-  yum: name=http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm state=present
+  yum: 
+    name=mesosphere-el-repo
+    state=installed
   
 - name: Install mesos from repo
   yum: name=mesos state=latest
@@ -9,24 +11,43 @@
   yum: name=marathon state=latest
   when: "'masters' in group_names"
 
+- name: Setup cluster name
+  template: src=cluster.j2 dest=/etc/mesos-master/cluster
+
+- name: Setup host name
+  template: src=hostname.j2 dest=/etc/mesos-slave/hostname
+
+- name: Setup containerizers
+  template: src=containerizers.j2 dest=/etc/mesos-slave/containerizers
+
 - name: Setup zookeeper connexion
   template: src=zk.j2 dest=/etc/mesos/zk
 
 - name: Setup quorum
   template: src=quorum.j2 dest=/etc/mesos-master/quorum
   when: "'masters' in group_names"
-  notify:
-    - Restart master
-    - Restart marathon
 
 - name: Disable mesos-slave for masters
   service: name=mesos-slave state=stopped enabled=no
   when: "'masters' in group_names"
-  notify:
-    - Restart master
 
 - name: Disable mesos-master for slaves
   service: name=mesos-master state=stopped enabled=no
   when: "'slaves' in group_names"
-  notify:
-    - Restart slave
+
+- name: Restart master
+  service: name=mesos-master state=restarted enabled=yes
+  when: "'masters' in group_names"
+
+- name: Restart marathon
+  service: name=marathon state=restarted enabled=yes
+  when: "'masters' in group_names"
+
+- name: Delete temp file
+  file:
+    path=/tmp/mesos
+    state=absent
+
+- name: Restart slave
+  service: name=mesos-slave state=restarted enabled=yes
+  when: "'slaves' in group_names"

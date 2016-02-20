@@ -1,0 +1,32 @@
+---
+- name: Docker package
+  yum: name=device-mapper-event-libs,docker state=latest
+
+- name: Start docker
+  service: 
+    name=docker
+    state=restarted
+    enabled=yes
+
+- name: configure containers
+  lineinfile: 
+    dest=/etc/mesos-slave/containerizers 
+    create=yes
+    regexp="^(.*)mesos(.*)"
+    line="docker,mesos"
+    state=present
+  when: "'slaves' in group_names"
+
+- name: Restart slaves
+  service:
+    name=mesos-slave
+    state=restarted
+    enabled=yes
+  when: "'slaves' in group_names"
+
+- name: Stop Slaves on master
+  service:
+    name=mesos-slave
+    state=stopped
+    enabled=no
+  when: "'masters' in group_names"

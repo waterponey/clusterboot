@@ -5,13 +5,24 @@
 - name: add user
   user: name={{username}}
         state=present
-        groups=admin
+        groups={{grouplist}}
         generate_ssh_key=yes
         ssh_key_bits=2048
         ssh_key_comment={{username}}@{{ansible_hostname}}
-        ssh_key_file=.ssh/{{ansible_hostname}}
         ssh_key_passphrase=
         ssh_key_type=rsa
+  ignore_errors: yes
+
+- name: add user
+  user: name={{username}}
+        state=present
+        generate_ssh_key=yes
+        ssh_key_bits=2048
+        ssh_key_comment={{username}}@{{ansible_hostname}}
+        ssh_key_passphrase=
+        ssh_key_type=rsa
+  when: ansible_hostname == 'localhost' or
+        ansible_hostname == 'firewall'
 
 - name: admin group must have passwordless sudo rights
   lineinfile: "dest=/etc/sudoers
@@ -21,18 +32,18 @@
               insertafter='^# %wheel'
               validate='visudo -cf %s'"
 
-- name: deploy local ssh key
-  authorized_key: user={{username}}
-                  key="{{ lookup('file', '/home/' + username + '/.ssh/id_rsa.pub') }}"
-
 - name: fetch newly deployed key
-  fetch: src=/home/{{username}}/.ssh/{{ansible_hostname}}.pub 
-         dest=/home/{{username}}/.ssh 
-         flat=yes
+  fetch: src=/home/{{username}}/.ssh/id_rsa.pub 
+         dest=/home/{{username}}/.ssh/
          validate_checksum=no
 
 - name: add all ssh keys
   authorized_key:
-    user=burq
-    key="{{ lookup('file', '/home/burq/.ssh/' + item + '.pub') }}"
+    user={{username}}
+    key="{{ lookup('file', '/home/' + username + '/.ssh/' + item + '/home/' + username + '/.ssh/id_rsa.pub') }}"
   with_items: "{{groups['all']}}"
+
+- name: deploy local ssh key
+  authorized_key: user={{username}}
+                  key="{{ lookup('file', '/home/' + username + '/.ssh/id_rsa.pub') }}"
+

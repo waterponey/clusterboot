@@ -1,0 +1,65 @@
+---
+- name: Create /opt/src
+  file: path=/opt/src state=directory recurse=yes
+
+- name: Create spark lib dir
+  file: path={{spark_lib_path}} state=directory recurse=yes
+
+- name: Download spar v{{spark_version}}
+  get_url: url={{spark_download_url}}
+    dest=/opt/src/{{spark_archive_file}}
+
+- name: Download spark binary
+  unarchive: src=/opt/src/{{spark_archive_file}} dest={{spark_lib_path}} copy=no
+
+#- name: Link configuration directory
+#  copy: 
+#    remote_src=True 
+#    src={{spark_lib_path_target}}/conf 
+#    dest=/etc/spark/conf.empty
+#        
+
+- name: Create /etc/spark
+  file: path=/etc/spark state=directory
+
+- name: empty conf
+  stat: path={{spark_lib_path_target}}/conf.empty
+  register: empty_conf
+
+- name: Save conf directory
+  command: cp -r {{spark_lib_path_target}}/conf {{spark_lib_path_target}}/conf.empty
+  when: empty_conf.stat.isdir is not defined or empty_conf.stat.isdir == False
+
+- name: Create Custom conf directory
+  command: cp -r {{spark_lib_path_target}}/conf.empty /etc/spark/conf.cmap
+
+- name: Delete old conf
+  file:
+    path={{spark_lib_path_target}}/conf
+    state=absent
+
+- name: Link Spark conf
+  file: 
+    path={{spark_lib_path_target}}/conf
+    state=link
+    force=yes
+    src=/etc/spark/conf.cmap
+
+- name: add executable
+  template: src={{item}}.j2 dest=/usr/bin/{{item}} owner=root group=root mode=0755
+  with_items:
+    - spark-shell
+    - spark-executor
+    - spark-submit
+    - pyspark
+
+
+
+- name: add conf file
+  template: src={{item}}.j2 dest=/etc/spark/conf.cmap/{{item}} owner=root group=root mode=0755
+  with_items:
+    - spark-env.sh
+    - spark-defaults.conf
+    - log4j.properties
+    - metrics.properties
+    - slaves

@@ -1,0 +1,19 @@
+---
+- name: Create /opt/src
+  file: path=/opt/src state=directory recurse=yes
+
+- name: Create {{java_lib_path}}
+  file: path={{java_lib_path}} state=directory recurse=yes
+
+- name: Download oracle jdk
+  get_url:
+    url={{oracle_jdk_download_url}}
+    dest=/opt/src/{{oracle_jdk_archive_file}}
+    validate_certs=no
+    headers='Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F;oraclelicense=accept-securebackup-cookie'
+
+- name: Unpack oracle jdk
+  unarchive:
+    src=/opt/src/{{oracle_jdk_archive_file}}
+    dest={{java_lib_path}}
+    copy=no

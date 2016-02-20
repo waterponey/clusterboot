@@ -1,5 +1,221 @@
-# TODO : namenode
-# TODO : datanode
-# TODO : journalnodes
-# TODO : secondarynamenode
-# TODO : passive namenode
+---
+- name: Ensure Cloudera repo is present
+  yum: 
+    name=cloudera-cdh 
+    state=present
+
+- name: lzo package
+  yum:
+    name=lzo-devel
+    state=latest
+
+- name: hadoop-client package
+  yum:
+    name=hadoop-client
+    state=latest
+  when: "'clients' in group_names"
+
+- name: Namenode package
+  yum: 
+    name=hadoop-hdfs-namenode 
+    state=latest
+  when: inventory_hostname == 'master01' or
+        inventory_hostname == 'master02'
+
+- name: ZK binding package
+  yum: 
+    name=hadoop-hdfs-zkfc
+    state=latest
+  when: inventory_hostname == 'master01' or
+        inventory_hostname == 'master02'
+
+- name: Journalnode package
+  yum:
+    name=hadoop-hdfs-journalnode
+    state=latest
+  when: "'masters' in group_names"
+
+- name: HistoryServer package
+  yum: 
+    name=hadoop-yarn-resourcemanager,hadoop-mapreduce-historyserver,hadoop-yarn-proxyserver
+    state=latest
+  when: inventory_hostname == 'master03'
+
+- name: Datanode package
+  yum:
+    name=hadoop-hdfs-datanode,hadoop-yarn-nodemanager,hadoop-mapreduce
+    state=latest
+  when: "'slaves' in group_names"
+
+##- name: Create Namenode conf directory
+##  copy: 
+##    src=/etc/hadoop/conf.empty 
+##    dest=/etc/hadoop/conf.cmap 
+##    directory_mode=yes
+##    remote_src=1
+##  when: inventory_hostname == 'master01'
+- name: Delete previous conf directory
+  file:
+    path=/etc/hadoop/conf.cmap
+    state=absent
+
+- name: Create Namenode conf directory
+  command: cp -r /etc/hadoop/conf.empty /etc/hadoop/conf.cmap
+#  when: (inventory_hostname == 'master01') or
+#        (inventory_hostname == 'master02') or
+#        ('slaves' in group_names)
+
+- name: Use alternative conf directory
+  alternatives: name=hadoop-conf link=/etc/hadoop/conf path=/etc/hadoop/conf.cmap
+#  when: (inventory_hostname == 'master01') or
+#        (inventory_hostname == 'master02') or
+#        ('slaves' in group_names)
+
+- name: Check core-site.xml
+  template: src=core-site.xml.j2 dest=/etc/hadoop/conf.cmap/core-site.xml
+#  when: (inventory_hostname == 'master01') or
+#        (inventory_hostname == 'master02') or
+#        ('slaves' in group_names)
+
+- name: Check hdfs-site.xml
+  template: src=hdfs-site.xml.j2 dest=/etc/hadoop/conf.cmap/hdfs-site.xml
+#  when: (inventory_hostname == 'master01') or
+#        (inventory_hostname == 'master02') or
+#        ('slaves' in group_names)
+
+- name: Check slaves
+  template: src=slaves.j2 dest=/etc/hadoop/conf.cmap/slaves
+#  when: (inventory_hostname == 'master01') or
+#        (inventory_hostname == 'master02') or
+#        ('slaves' in group_names)
+
+- name: Check yarn-site.xml
+  template: src=yarn-site.xml.j2 dest=/etc/hadoop/conf.cmap/yarn-site.xml
+
+- name: Check mapred-site.xml
+  template: src=mapred-site.xml.j2 dest=/etc/hadoop/conf.cmap/mapred-site.xml
+
+- name: Create DataNode data directory
+  file:
+    path={{ item }}
+    state=directory
+    owner=hdfs
+    group=hadoop
+    mode=700
+  with_items:
+    - /mnt/disk1/hdfs/dn
+    - /mnt/disk2/hdfs/dn
+    - /mnt/disk3/hdfs/dn
+    - /mnt/disk4/hdfs/dn
+    - /mnt/disk5/hdfs/dn
+    - /mnt/disk6/hdfs/dn
+  when: "'slaves' in group_names"
+
+- name: Create NameNode data directory
+  file:
+    path=/data/hdfs/nn
+    state=directory
+    owner=hdfs
+    group=hdfs
+    mode=700
+  when: inventory_hostname == 'master01' or
+        inventory_hostname == 'master02'
+
+- name: Create JournalNode data directory
+  file:
+    path=/data/hdfs/jn
+    state=directory
+    owner=hdfs
+    group=hdfs
+    mode=700
+  when: "'masters' in group_names"
+
+- name: Add useless package
+  yum: name=fprintd-pam state=present
+
+- name: Format ZK for HA
+  become: yes
+  become_user: hdfs
+  shell:  yes | hdfs zkfc -formatZK
+  when: inventory_hostname == 'master01'
+  ignore_errors: yes
+
+- name: Start JournalNode
+  service: name=hadoop-hdfs-journalnode state=restarted enabled=yes
+  when: "'masters' in group_names" 
+
+#- name: Stop Namenodes
+#  service: name=hadoop-hdfs-namenode state=stopped
+#  when: inventory_hostname == 'master01' or
+#        inventory_hostname == 'master02'
+#
+#- name: Stop Namenodes
+#  service: name=hadoop-hdfs-datanode state=stopped
+#  when: "'slaves' in group_names"
+#
+- name: Format Namenode
+  become: yes
+  become_user: hdfs
+  shell:  yes 2>/dev/null | hdfs namenode -format
+  when: inventory_hostname == 'master01'
+
+- name: Start NameNode
+  service: name=hadoop-hdfs-namenode state=restarted enabled=yes
+  when: inventory_hostname == 'master01'
+
+- name: Bootstrap Standby Namenode
+  become: yes
+  become_user: hdfs
+  shell: yes 2>/dev/null | hdfs namenode -bootstrapStandby
+  when: inventory_hostname == 'master02'
+
+- name: Start Standby NameNode
+  service: name=hadoop-hdfs-namenode state=restarted enabled=yes
+  when: inventory_hostname == 'master02'
+
+- name: Start ZKFC daemon
+  service: name=hadoop-hdfs-zkfc state=restarted enabled=yes
+  when: inventory_hostname == 'master01' or
+        inventory_hostname == 'master02'
+
+- name: Update permissions on /tmp dir to allow hadoop group write
+  become: yes
+  become_user: hdfs
+  shell: >
+    hadoop fs -mkdir /tmp;
+    hadoop fs -chmod -R 1777 /tmp;
+    hadoop fs -mkdir -p /user/history;
+    hadoop fs -chmod -R 1777 /user/history;
+    hadoop fs -chown mapred:hadoop /user/history;
+    hadoop fs -mkdir -p /var/log/hadoop-yarn;
+    hadoop fs -chown yarn:mapred /var/log/hadoop-yarn;
+    hadoop fs -mkdir /shared;
+    hadoop fs -chmod -R 1777 /shared;
+  when: inventory_hostname == 'master01'
+
+- name: Start DataNode
+  service: name=hadoop-hdfs-datanode state=restarted enabled=yes
+  when: "'slaves' in group_names"
+
+- name: Create NodeManager data directory
+  file:
+    path={{ item }}
+    state=directory
+    owner=yarn
+    group=yarn
+    mode=755
+  with_items:
+    - /mnt/disk1/yarn/logs
+    - /mnt/disk2/yarn/logs
+    - /mnt/disk3/yarn/logs
+    - /mnt/disk4/yarn/logs
+    - /mnt/disk5/yarn/logs
+    - /mnt/disk6/yarn/logs
+    - /mnt/disk1/yarn/local
+    - /mnt/disk2/yarn/local
+    - /mnt/disk3/yarn/local
+    - /mnt/disk4/yarn/local
+    - /mnt/disk5/yarn/local
+    - /mnt/disk6/yarn/local
+  when: "'slaves' in group_names"
+

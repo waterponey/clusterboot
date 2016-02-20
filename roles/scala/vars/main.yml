@@ -8,7 +8,7 @@ sbt_lib_path: "/usr/lib"
 sbt_lib_path_target: "{{sbt_lib_path}}/sbt"
 sbt_link_target: "/usr/bin/sbt"
 
-scala_version: "2.11.5"
+scala_version: "2.10.6"
 scala_version_name: "scala-{{scala_version}}"
 scala_archive_file: "{{scala_version_name}}.tgz"
 scala_download_url: "http://www.scala-lang.org/files/archive/{{scala_archive_file}}"
