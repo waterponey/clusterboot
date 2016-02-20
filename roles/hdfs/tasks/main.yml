@@ -19,21 +19,7 @@
   yum: 
     name=hadoop-hdfs-namenode 
     state=latest
-  when: inventory_hostname == 'master01' or
-        inventory_hostname == 'master02'
-
-- name: ZK binding package
-  yum: 
-    name=hadoop-hdfs-zkfc
-    state=latest
-  when: inventory_hostname == 'master01' or
-        inventory_hostname == 'master02'
-
-- name: Journalnode package
-  yum:
-    name=hadoop-hdfs-journalnode
-    state=latest
-  when: "'masters' in group_names"
+  when: inventory_hostname == 'master01'
 
 - name: HistoryServer package
   yum: 
@@ -118,41 +104,11 @@
     owner=hdfs
     group=hdfs
     mode=700
-  when: inventory_hostname == 'master01' or
-        inventory_hostname == 'master02'
-
-- name: Create JournalNode data directory
-  file:
-    path=/data/hdfs/jn
-    state=directory
-    owner=hdfs
-    group=hdfs
-    mode=700
-  when: "'masters' in group_names"
+  when: inventory_hostname == 'master01'
 
 - name: Add useless package
   yum: name=fprintd-pam state=present
 
-- name: Format ZK for HA
-  become: yes
-  become_user: hdfs
-  shell:  yes | hdfs zkfc -formatZK
-  when: inventory_hostname == 'master01'
-  ignore_errors: yes
-
-- name: Start JournalNode
-  service: name=hadoop-hdfs-journalnode state=restarted enabled=yes
-  when: "'masters' in group_names" 
-
-#- name: Stop Namenodes
-#  service: name=hadoop-hdfs-namenode state=stopped
-#  when: inventory_hostname == 'master01' or
-#        inventory_hostname == 'master02'
-#
-#- name: Stop Namenodes
-#  service: name=hadoop-hdfs-datanode state=stopped
-#  when: "'slaves' in group_names"
-#
 - name: Format Namenode
   become: yes
   become_user: hdfs
@@ -162,21 +118,6 @@
 - name: Start NameNode
   service: name=hadoop-hdfs-namenode state=restarted enabled=yes
   when: inventory_hostname == 'master01'
-
-- name: Bootstrap Standby Namenode
-  become: yes
-  become_user: hdfs
-  shell: yes 2>/dev/null | hdfs namenode -bootstrapStandby
-  when: inventory_hostname == 'master02'
-
-- name: Start Standby NameNode
-  service: name=hadoop-hdfs-namenode state=restarted enabled=yes
-  when: inventory_hostname == 'master02'
-
-- name: Start ZKFC daemon
-  service: name=hadoop-hdfs-zkfc state=restarted enabled=yes
-  when: inventory_hostname == 'master01' or
-        inventory_hostname == 'master02'
 
 - name: Update permissions on /tmp dir to allow hadoop group write
   become: yes

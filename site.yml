@@ -3,13 +3,13 @@
   vars:
     zookeeper_client_port: '2181' 
   roles:
-    - common
+#    - common
 #    - java
-    - ntp
-    - scala
-#    - { role: haproxy, when: 'masters' in group_names }
-    - { role: zookeeper, when: 'masters' in group_names }
+#    - ntp
+#    - scala
+##    - { role: haproxy, when: 'masters' in group_names }
+#    - { role: zookeeper, when: "'masters' in group_names" }
 #    - mesos
-    - docker
+#    - docker
     - hdfs
-    - spark
+#    - spark

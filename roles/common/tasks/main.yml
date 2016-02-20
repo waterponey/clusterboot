@@ -29,11 +29,11 @@
 - name: Disable selinux
   selinux: state=disabled
 
-- name: Disable iptables
-  service: name=iptables state=stopped enabled=no
+#- name: Disable iptables
+#  service: name=iptables state=stopped enabled=no
 
-- name: Disable ip6tables
-  service: name=ip6tables state=stopped enabled=no
+#- name: Disable ip6tables
+#  service: name=ip6tables state=stopped enabled=no
 
 #- name: Check java version
 #  alternatives: name=java path=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/bin/java
