@@ -19,39 +19,37 @@
 
 <configuration>
   <property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce_shuffle</value>
-  </property>
-  <property>
     <name>yarn.resourcemanager.hostname</name>
     <value>master03.local</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
   </property>
   <property>
     <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
     <value>org.apache.hadoop.mapred.ShuffleHandler</value>
   </property>
-
-  <property>
-    <name>yarn.log-aggregation-enable</name>
-    <value>true</value>
-  </property>
-
   <property>
     <description>List of directories to store localized files in.</description>
     <name>yarn.nodemanager.local-dirs</name>
     <value>file:///mnt/disk1/yarn/local,file:///mnt/disk2/yarn/local,file:///mnt/disk3/yarn/local,file:///mnt/disk4/yarn/local,file:///mnt/disk5/yarn/local,file:///mnt/disk6/yarn/local</value>
   </property>
-
   <property>
     <description>Where to store container logs.</description>
     <name>yarn.nodemanager.log-dirs</name>
     <value>file:///mnt/disk1/yarn/logs,file:///mnt/disk2/yarn/logs,file:///mnt/disk3/yarn/logs,file:///mnt/disk4/yarn/logs,file:///mnt/disk5/yarn/logs,file:///mnt/disk6/yarn/logs</value>
   </property>
-
   <property>
     <description>Where to aggregate logs to.</description>
     <name>yarn.nodemanager.remote-app-log-dir</name>
     <value>hdfs:/var/log/hadoop-yarn/apps</value>
+  </property>
+  
+  <property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value>
   </property>
 
   <property>
