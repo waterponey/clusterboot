@@ -1,7 +1,10 @@
-ansible all -m get_url -a "url=http://master04/files/Anaconda3-2.5.0-Linux-x86_64.sh dest=/opt/src/Anaconda3-2.5.0-Linux-x86_64.sh mode=0744"
+---
+- name: download the binary
+  get_url:
+    url: {{anaconda_url}}
+    dest: /opt/src/{{anaconda_binary}}
+    mode: 0744
 
-ansible all -m command -a "/opt/src/Anaconda3-2.5.0-Linux-x86_64.sh -b -p /usr/lib/anaconda3"
-
-ansible all -m blockinfile -a "dest=/home/bdp1/anaconda.path block='export PATH=/usr/lib/anaconda3/bin:$PATH' state=present create=yes"
-
-ansible all -m get_url -a "url=http://master04/files/spark-1.6.2-bin-hadoop2.6.tgz dest=/opt/src/spark-1.6.2-bin-hadoop2.6.tgz"
+- name: install conda
+  command: /opt/src/{{anaconda_binary}} -b -p {{anaconda_target_path}}
+  

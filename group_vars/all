@@ -21,11 +21,19 @@ repos:
   - hdp-utils: {{ repo_url }}/hortonworks/HDP-UTILS-1.1.0.21
   # reference : http://dl.bintray.com/sbt/rpm
   - bintray: {{ repo_url }}/bintray
+  # reference : https://repo.continuum.io/pkgs/
+  - conda: {{repo_url}}/conda
 
 ntp_server: # The FQDN of your ntp server
 
 # the root of the url to download scala. Should be in the form http://myurl/{{scala-version}}/{{scala-binary-file}}
 # reference : http://downloads.lightbend.com/scala/2.11.8/scala-2.11.8.rpm
 scala_url: http://downloads.lightbend.com/scala
+
+# the root of the url to download anaconda
+# reference : https://repo.continuum.io/archive/Anaconda3-2.5.0-Linux-x86_64.sh
+anaconda_url: https://repo.continuum.io/archive
+
+
 
 spark_url: # The url to download spark.

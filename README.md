@@ -25,4 +25,4 @@ Same as Online but also :
 - Mirror of the SBT repository
 - Binaries for scala
 - Binaries for spark
-- 
+- Binary for anaconda 
