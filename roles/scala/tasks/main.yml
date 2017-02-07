@@ -1,42 +1,16 @@
 ---
-- name: Create /opt/src
-  file: path=/opt/src state=directory recurse=yes
+- name: Connect to bintray repository
+  template: src=bintray.repo.j2 dest=/etc/yum.repos.d/bintray.repo
 
-- name: Create sbt lib dir
-  file: path={{sbt_lib_path}} state=directory recurse=yes
-
-- name: Download sbt v{{sbt_version}}
-  get_url: url={{sbt_download_url}} 
-    dest=/opt/src/{{sbt_archive_file}}
-
-- name: Unpack sbt
-  unarchive: src=/opt/src/{{sbt_archive_file}} dest={{sbt_lib_path}} copy=no
-
-- name: Link sbt
-  file: state=link src={{sbt_lib_path_target}}/bin/sbt dest={{sbt_link_target}}
-
+- name: Ensure sbt presence
+  yum: name=sbt state=latest
 
 - name: Create scala lib dir
   file: path={{scala_lib_path_target}} state=directory recurse=yes
 
 - name: Download scala v{{scala_version}}
-  get_url: url={{scala_download_url}} 
-    dest=/opt/src/{{scala_archive_file}}
+  get_url: url={{scala_download_url}}
+    dest=/opt/src/{{scala_binary_file}}
 
-- name: Unpack scala
-  unarchive: src=/opt/src/{{scala_archive_file}} dest={{scala_lib_path}} copy=no
-
-- name: Link scala
-  file: state=link src={{scala_lib_path_target}}/bin/scala dest={{scala_link_target}}/scala
-
-- name: Link scalac
-  file: state=link src={{scala_lib_path_target}}/bin/scalac dest={{scala_link_target}}/scalac
-
-- name: Link fsc
-  file: state=link src={{scala_lib_path_target}}/bin/fsc dest={{scala_link_target}}/fsc
-
-- name: Link scaladoc
-  file: state=link src={{scala_lib_path_target}}/bin/scaladoc dest={{scala_link_target}}/scaladoc
-
-- name: Link scalap
-  file: state=link src={{scala_lib_path_target}}/bin/scalap dest={{scala_link_target}}/scalap
+- name: Ensure binary is installed
+  yum: name=/opt/src/{{scala_binary_file}} state=present

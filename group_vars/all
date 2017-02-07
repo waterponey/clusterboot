@@ -9,12 +9,23 @@ repos:
   - extras: {{ repo_url }}/Centos/extras
   - centosplus: {{ repo_url }}/Centos/centosplus
   - epel: {{ repo_url }}/Centos/epel
+  # reference : https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/5/
   - cloudera-cdh5: {{ repo_url }}/cloudera
+  # reference : http://repos.mesosphere.com/el/7/x86_64/RPMS/
   - mesosphere: {{ repo_url }}/Mesosphere/mesosphere
+  # reference : http://repos.mesosphere.com/el/7/noarch/
   - mesosphere-noarch: {{ repo_url }}/Mesosphere/mesosphere-noarch
+  # reference : http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/HDP-2.5.0.0-centos7-rpm.tar.gz
   - hdp: {{ repo_url }}/hortonworks/HDP-2.5.0.0
+  # reference : http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos7/HDP-UTILS-1.1.0.21-centos7.tar.gz
   - hdp-utils: {{ repo_url }}/hortonworks/HDP-UTILS-1.1.0.21
+  # reference : http://dl.bintray.com/sbt/rpm
+  - bintray: {{ repo_url }}/bintray
 
 ntp_server: # The FQDN of your ntp server
+
+# the root of the url to download scala. Should be in the form http://myurl/{{scala-version}}/{{scala-binary-file}}
+# reference : http://downloads.lightbend.com/scala/2.11.8/scala-2.11.8.rpm
+scala_url: http://downloads.lightbend.com/scala
 
 spark_url: # The url to download spark.
