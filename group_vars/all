@@ -1,8 +1,8 @@
 ---
 is_offline: False
-dns_ip: 192.168.20.4
+dns_ip: # The IP Adress for your DNS server
 
-repo_url: http://master04/
+repo_url: # The url for your HTTP file server
 repos:
   - base: {{ repo_url }}/Centos/base
   - updates: {{ repo_url }}/Centos/updates
@@ -15,9 +15,6 @@ repos:
   - hdp: {{ repo_url }}/hortonworks/HDP-2.5.0.0
   - hdp-utils: {{ repo_url }}/hortonworks/HDP-UTILS-1.1.0.21
 
-spark_url: http://
+ntp_server: # The FQDN of your ntp server
 
-users:
-  - username1:
-    sudoer: True
-  -
+spark_url: # The url to download spark.

@@ -4,7 +4,6 @@
     zookeeper_client_port: '2181'
   roles:
     - common
-    - java
     - ntp-client
     - scala
     - conda
