@@ -1,3 +1,0 @@
-- name: Install haproxy
-  yum: name=haproxy state=latest
-  

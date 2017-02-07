@@ -1,0 +1,20 @@
+[base]
+name=Local Base Mirror
+baseurl={{ repos.base }}
+gpgcheck=0
+
+[updates]
+name=Local Updates Mirror
+baseurl={{ repos.updates }}
+gpgcheck=0
+
+[extras]
+name=Local Extras Mirror
+baseurl={{ repos.extras }}
+gpgcheck=0
+
+[centosplus]
+name=Local CentosPlus Mirror
+baseurl={{ repos.centosplus }}
+enabled=0
+gpgcheck=0
