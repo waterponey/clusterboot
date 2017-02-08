@@ -1,13 +1,12 @@
-- name: Disable selinux
-  selinux: state=disabled
-
-- name: Disable Firewalld
-  service: name=firewalld state=stopped enabled=no
-
 - name: Check DNS resolver
   lineinfile: dest=/etc/resolv.conf regexp='^nameserver' line='nameserver {{ dns_ip }}'
 
-- name: Clean repositories
+- name: Disable repositories
+  yum_repository:
+    name: "*"
+    state: absent
+
+- name: Physically clean repositories
   file: path=/etc/yum.repos.d state=absent
   when: is_offline == True
 
@@ -26,6 +25,9 @@
 - name: Enable EPEL repositories
   yum: name=epel-release state=present
   when: is_offline == False
+
+- name: Clean YUM cache
+  command: yum clean all
 
 - name: install the 'Development tools' package group
   yum: name="@Development tools" state=present
@@ -51,3 +53,10 @@
 
 - name: Upgrade all
   yum: name=* state=latest
+
+- name: Disable selinux
+  selinux: state=disabled
+
+- name: Disable Firewalld
+  service: name=firewalld state=stopped enabled=no
+  ignore_errors: yes
