@@ -1,6 +1,31 @@
 ---
-- name: Cloudera repo
-  yum: name=https://archive.cloudera.com/cdh5/one-click-install/redhat/7/x86_64/cloudera-cdh-5-0.x86_64.rpm state=present
+- name: Add cloudera repository
+  yum_repository:
+    name: cloudera-cdh5
+    description: Cloudera's Distribution for Hadoop, Version 5
+    file: cloudera-cdh5.repo
+    baseurl: https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/5/
+    gpgkey: https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/RPM-GPG-KEY-cloudera
+    gpgcheck: yes
+    enabled: no
+
+- name: Add HDP repository
+  yum_repository:
+    name: HDP-2.5.0.0
+    description: HDP Version - HDP-2.5.0.0
+    file: hdp.repo
+    baseurl: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0
+    gpgkey: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+    gpgcheck: yes
+
+- name: Add HDP-UTILS repository
+  yum_repository:
+    name: HDP-UTILS-1.1.0.21
+    description: HDP-UTILS Version - HDP-UTILS-1.1.0.21
+    file: hdp.repo
+    baseurl: http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos7
+    gpgkey: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+    gpgcheck: yes
 
 - name: Zookeeper package
   yum: name=zookeeper-server state=latest
@@ -18,4 +43,4 @@
   template: src=zoo.cfg.j2 dest={{zookeeper_conf_dir}}/zoo.cfg owner=zookeeper group=zookeeper
 
 - name: Start zookeeper
-  service: name=zookeeper-server state=restarted enabled=yes
+  service: name=zookeeper-server enabled=yes state=restarted 
