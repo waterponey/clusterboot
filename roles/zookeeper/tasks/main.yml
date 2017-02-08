@@ -31,7 +31,7 @@
   yum: name=zookeeper-server state=latest
 
 - name: Ensure data directory exists
-  file: path={{zookeeper_data_dir}}/version-2 state=directory recurse=yes owner=zookeeper group=zookeeper
+  file: path={{zookeeper_data_dir}} state=directory recurse=yes owner=zookeeper group=zookeeper
 
 - name: Ensure log directory exists
   file: path={{zookeeper_log_dir}} state=directory recurse=yes owner=zookeeper group=zookeeper
@@ -39,8 +39,11 @@
 - name: Write myid file.
   template: src=myid.j2 dest={{zookeeper_data_dir}}/myid owner=zookeeper group=zookeeper
 
+- name: Write log4j conf file.
+  template: src=log4j.properties dest={{zookeeper_conf_dir}}/log4j.properties owner=zookeeper group=zookeeper
+
 - name: Configure zookeeper
   template: src=zoo.cfg.j2 dest={{zookeeper_conf_dir}}/zoo.cfg owner=zookeeper group=zookeeper
 
 - name: Start zookeeper
-  service: name=zookeeper-server enabled=yes state=restarted 
+  service: name=zookeeper-server enabled=yes state=restarted
