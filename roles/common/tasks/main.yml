@@ -53,6 +53,7 @@
 
 - name: Upgrade all
   yum: name=* state=latest
+  serial: 4
 
 - name: Disable selinux
   selinux: state=disabled
