@@ -1,9 +1,24 @@
 ---
-- name: Ensure presence of adequate repository
-  yum: 
-    name=mesosphere-el-repo
-    state=installed
-  
+- name: Add mesosphere repository
+  yum_repository:
+    name: mesosphere
+    description: Mesosphere Packages for EL 7 - $basearch
+    file: mesosphere.repo
+    baseurl: http://repos.mesosphere.com/el/7/$basearch/
+    gpgkey: https://repos.mesosphere.com/el/RPM-GPG-KEY-mesosphere
+    gpgcheck: yes
+    enabled: yes
+
+- name: Add mesosphere-noarch repository
+  yum_repository:
+    name: mesosphere-noarch
+    description: Mesosphere Packages for EL 7 - noarch
+    file: mesosphere.repo
+    baseurl: http://repos.mesosphere.com/el/7/noarch/
+    gpgkey: https://repos.mesosphere.com/el/RPM-GPG-KEY-mesosphere
+    gpgcheck: yes
+    enabled: yes
+
 - name: Install mesos from repo
   yum: name=mesos state=latest
 
