@@ -3,7 +3,7 @@
   yum_repository:
     name: cloudera-cdh5
     description: Cloudera's Distribution for Hadoop, Version 5
-    file: cloudera-cdh5.repo
+    file: cloudera-cdh5
     baseurl: https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/5/
     gpgkey: https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/RPM-GPG-KEY-cloudera
     gpgcheck: yes
@@ -13,7 +13,7 @@
   yum_repository:
     name: HDP-2.5.0.0
     description: HDP Version - HDP-2.5.0.0
-    file: hdp.repo
+    file: hdp
     baseurl: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0
     gpgkey: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
     gpgcheck: yes
@@ -22,7 +22,7 @@
   yum_repository:
     name: HDP-UTILS-1.1.0.21
     description: HDP-UTILS Version - HDP-UTILS-1.1.0.21
-    file: hdp.repo
+    file: hdp
     baseurl: http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos7
     gpgkey: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
     gpgcheck: yes

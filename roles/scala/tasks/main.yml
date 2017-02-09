@@ -3,7 +3,7 @@
   yum_repository:
     name: bintray-sbt
     description: SBT RPM package from Bintray
-    file: bintray--sbt-rpm.repo
+    file: bintray--sbt-rpm
     baseurl: http://dl.bintray.com/sbt/rpm
     gpgcheck: no
     enabled: yes
