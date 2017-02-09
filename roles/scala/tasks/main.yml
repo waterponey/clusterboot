@@ -11,9 +11,6 @@
 - name: Ensure sbt presence
   yum: name=sbt state=latest
 
-- name: Create scala lib dir
-  file: path={{scala_lib_path_target}} state=directory recurse=yes
-
 - name: Download scala v{{scala_version}}
   get_url: url={{scala_download_url}}
     dest=/opt/src/{{scala_binary_file}}
