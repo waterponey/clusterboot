@@ -1,6 +1,6 @@
 # ClusterBoot
 
-This is an Ansible playbook designed to start a cluster on our own infrastructure.
+This is an Ansible playbook designed to start a cluster on our own infrastructure. It needs the version 2.1 of Ansible (which is not the official version provided by the centos package but is the version available on python-pip).
 
 Working only with an installed cluster based on Centos7
 
@@ -25,4 +25,4 @@ Same as Online but also :
 - Mirror of the SBT repository
 - Binaries for scala
 - Binaries for spark
-- Binary for anaconda 
+- Binary for anaconda

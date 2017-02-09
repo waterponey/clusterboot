@@ -1,6 +1,12 @@
 ---
-- name: Connect to bintray repository
-  template: src=bintray.repo.j2 dest=/etc/yum.repos.d/bintray.repo
+- name: Add sbt repository
+  yum_repository:
+    name: bintray-sbt
+    description: SBT RPM package from Bintray
+    file: bintray--sbt-rpm.repo
+    baseurl: http://dl.bintray.com/sbt/rpm
+    gpgcheck: no
+    enabled: yes
 
 - name: Ensure sbt presence
   yum: name=sbt state=latest
