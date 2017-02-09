@@ -1,5 +1,5 @@
 ---
 scala_version: "2.11.8"
 scala_version_name: "scala-{{scala_version}}"
-scala_archive_file: "{{scala_version_name}}.rpm"
-scala_download_url: "{{scala_url}}/{{scala_version}}/{{scala_archive_file}}"
+scala_rpm_file: "{{scala_version_name}}.rpm"
+scala_download_url: "{{scala_url}}/{{scala_version}}/{{scala_rpm_file}}"

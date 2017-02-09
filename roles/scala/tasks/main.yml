@@ -13,7 +13,7 @@
 
 - name: Download scala v{{scala_version}}
   get_url: url={{scala_download_url}}
-    dest=/opt/src/{{scala_binary_file}}
+    dest=/opt/src/{{scala_rpm_file}}
 
 - name: Ensure binary is installed
-  yum: name=/opt/src/{{scala_binary_file}} state=present
+  yum: name=/opt/src/{{scala_rpm_file}} state=present

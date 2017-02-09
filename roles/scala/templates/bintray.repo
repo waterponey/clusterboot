@@ -1,5 +1,0 @@
-[bintray]
-name=Local Bintray's SBT repository mirror
-baseurl={{ repos.bintray }}
-gpgcheck=0
-enabled=1
