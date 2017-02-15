@@ -1,11 +1,6 @@
 - name: Check DNS resolver
   lineinfile: dest=/etc/resolv.conf regexp='^nameserver' line='nameserver {{ dns_ip }}'
 
-- name: Disable repositories
-  yum_repository:
-    name: "*"
-    state: absent
-
 - name: Physically clean repositories
   file: path=/etc/yum.repos.d state=absent
   when: is_offline == True
@@ -25,9 +20,6 @@
 - name: Enable EPEL repositories
   yum: name=epel-release state=present
   when: is_offline == False
-
-- name: Clean YUM cache
-  command: yum clean all
 
 - name: install the 'Development tools' package group
   yum: name="@Development tools" state=present
@@ -50,10 +42,10 @@
     - python-setuptools
     - python-pip
     - libgfortran
+    - openssl-devel
 
 - name: Upgrade all
   yum: name=* state=latest
-  serial: 4
 
 - name: Disable selinux
   selinux: state=disabled
