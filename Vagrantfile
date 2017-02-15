@@ -46,6 +46,11 @@ Vagrant.configure("2") do |config|
   # configure the host's /etc/hosts
   config.hostmanager.manage_host = true
 
+  # configure the guest's /etc/hosts
+  config.hostmanager.manage_guest = true
+
+  #config.hostmanager.include_offline = true
+
   (1..$num_instances).each do |i|
     config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
       config.vm.hostname = vm_name
@@ -76,18 +81,18 @@ Vagrant.configure("2") do |config|
   end
 
   # configure provisionning using ansible
-  config.vm.provision "ansible" do |ansible|
-    ansible.verbose = "v"
-    ansible.playbook = "playbook.yml"
-    ansible.host_vars = {
-      "centos-01" => {"zoo_id" => 1},
-      "centos-02" => {"zoo_id" => 2},
-      "centos-03" => {"zoo_id" => 3}
-    }
-    ansible.groups = {
-      "masters" => ["centos-0[1:3]"],
-      "slaves"  => ["centos-0[4:6]"]
-    }
-  end
+  #config.vm.provision "ansible" do |ansible|
+  #  ansible.verbose = "v"
+  #  ansible.playbook = "playbook.yml"
+  #  ansible.host_vars = {
+  #    "centos-01" => {"zoo_id" => 1},
+  #    "centos-02" => {"zoo_id" => 2},
+  #    "centos-03" => {"zoo_id" => 3}
+  #  }
+  #  ansible.groups = {
+  #    "masters" => ["centos-0[1:3]"],
+  #    "slaves"  => ["centos-0[4:6]"]
+  #  }
+  #end
 
 end
