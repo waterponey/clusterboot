@@ -1,5 +1,8 @@
 ---
 is_offline: False
+
+ansible_become: true
+
 dns_ip: # The IP Adress for your DNS server
 
 repo_url: # The url for your HTTP file server
