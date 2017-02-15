@@ -70,7 +70,7 @@ Vagrant.configure("2") do |config|
       end
 
       ip = "192.168.42.#{i+100}"
-      config.vm.network "private_network", ip: ip
+      config.vm.network "private_network", ip: ip, auto_config: false
 
     end
   end
