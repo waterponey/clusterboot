@@ -78,7 +78,6 @@ Vagrant.configure("2") do |config|
   # configure provisionning using ansible
   config.vm.provision "ansible" do |ansible|
     ansible.verbose = "v"
-    ansible.limit = "all"
     ansible.playbook = "playbook.yml"
     ansible.host_vars = {
       "centos-01" => {"zoo_id" => 1},
