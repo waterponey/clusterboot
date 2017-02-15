@@ -1,0 +1,5 @@
+# Exclude vagrant files
+.vagrant/**
+
+# Exclude files that appears when ansible fails
+**.retry
