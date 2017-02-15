@@ -42,14 +42,10 @@ Vagrant.configure("2") do |config|
 
   # enable hostmanager
   config.hostmanager.enabled = true
-
-  # configure the host's /etc/hosts
   config.hostmanager.manage_host = true
-
-  # configure the guest's /etc/hosts
   config.hostmanager.manage_guest = true
-
-  #config.hostmanager.include_offline = true
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = true
 
   (1..$num_instances).each do |i|
     config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |node|
@@ -74,7 +70,12 @@ Vagrant.configure("2") do |config|
         vb.cpus = vm_cpus
       end
 
+      $forwarded_ports.each do |guest, host|
+        config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+      end
+
       node.vm.network :private_network, ip: "192.168.42.10#{i}"
+      node.vm.provision :file, source: "~/.vagrant.d/insecure_private_key", destination:"~/.ssh/id_rsa"
 
     end
   end
