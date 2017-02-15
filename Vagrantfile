@@ -80,6 +80,11 @@ Vagrant.configure("2") do |config|
     ansible.verbose = "v"
     ansible.limit = "all"
     ansible.playbook = "playbook.yml"
+    ansible.host_vars = {
+      "centos-01" => {"zoo_id" => 1},
+      "centos-02" => {"zoo_id" => 2},
+      "centos-03" => {"zoo_id" => 3}
+    }
     ansible.groups = {
       "masters" => ["centos-0[1:3]"],
       "slaves"  => ["centos-0[4:6]"]
