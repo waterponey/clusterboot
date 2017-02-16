@@ -24,7 +24,12 @@
   get_url: url={{zk_archive_url}} dest={{zk_download_dir}}/{{zk_archive}}
 
 - name: Extract zookeeper archive
-  unarchive: src={{zk_download_dir}}/{{zk_archive}} dest={{zk_lib_dir}} copy=no
+  unarchive:
+    src: {{zk_download_dir}}/{{zk_archive}}
+    dest: {{zk_lib_dir}}
+    copy: no
+    owner: zookeeper
+    group: zookeeper
 
 - name: Write myid file.
   template: src=myid.j2 dest={{zk_data_dir}}/myid owner=zookeeper group=zookeeper
