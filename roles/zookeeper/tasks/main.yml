@@ -25,8 +25,8 @@
 
 - name: Extract zookeeper archive
   unarchive:
-    src: {{zk_download_dir}}/{{zk_archive}}
-    dest: {{zk_lib_dir}}
+    src: "{{zk_download_dir}}/{{zk_archive}}"
+    dest: "{{zk_lib_dir}}"
     copy: no
     owner: zookeeper
     group: zookeeper
