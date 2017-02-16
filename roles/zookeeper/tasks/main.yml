@@ -5,26 +5,39 @@
     - libselinux-python
     - java-1.8.0-openjdk-devel
 
+- group: name=zookeeper system=yes
+
+- user: name=zookeeper group=zookeeper system=yes
+
 - name: Ensure download directory exists
   file: path={{zk_download_dir}} state=directory
 
-- name: Ensure lib directory exists
-  file: path={{zk_lib_dir}} state=directory recurse=yes
+- name: Ensure {{item}} directory exists
+  file: path={{item}} state=directory owner=zookeeper group=zookeeper
+  with_items:
+    - "{{zk_lib_dir}}"
+    - "{{zk_data_dir}}"
+    - "{{zk_log_dir}}"
+    - "{{zk_conf_dir}}"
 
 - name: Download zookeeper version.
   get_url: url={{zk_archive_url}} dest={{zk_download_dir}}/{{zk_archive}}
 
 - name: Extract zookeeper archive
-  unarchive: src={{zk_download_dir}}/{{zk_archive}} dest={{zk_lib_dir}}
+  unarchive: src={{zk_download_dir}}/{{zk_archive}} dest={{zk_lib_dir}} copy=no
 
-#- name: Write myid file.
-#  template: src=myid.j2 dest={{zk_data_dir}}/myid owner=zookeeper group=zookeeper
-#
-#- name: Write log4j conf file.
-#  template: src=log4j.properties dest={{zookeeper_conf_dir}}/log4j.properties owner=zookeeper group=zookeeper
-#
-#- name: Configure zookeeper
-#  template: src=zoo.cfg.j2 dest={{zookeeper_conf_dir}}/zoo.cfg owner=zookeeper group=zookeeper
-#
-#- name: Start zookeeper
-#  service: name=zookeeper-server enabled=yes state=restarted
+- name: Write myid file.
+  template: src=myid.j2 dest={{zk_data_dir}}/myid owner=zookeeper group=zookeeper
+
+- name: Write systemd service file
+  template: src=zookeeper.service.j2 dest=/etc/systemd/system/zookeeper.service
+
+- name: Write conf {{item}}
+  template: src={{item}}.j2 dest={{zk_conf_dir}}/{{item}} owner=zookeeper group=zookeeper
+  with_items:
+    - zoo.cfg
+    - log4j.properties
+    - zookeeper-env.sh
+
+- name: Enable zookeeper
+  service: name=zookeeper enabled=yes state=restarted
