@@ -1,12 +1,14 @@
 ###
-- name: ntp must not be there
-  yum: name=ntp state=absent
+- name: ntpd package
+  yum: name=ntp state=latest
 
-- name: install chrony daemon
-  yum: name=chrony state=latest
+- name: Disable chronyd service
+  service: name=chronyd state=stopped enabled=no
+  ignore_errors: yes
 
 - name: setup configuration file
-  template: src=chrony.conf.j2 dest=/etc/chrony.conf
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  when: is_offline == True
 
-- name: launch chronyd service
-  service: name=chronyd state=restarted enabled=yes
+- name: launch ntpd service
+  service: name=ntpd state=restarted enabled=yes
