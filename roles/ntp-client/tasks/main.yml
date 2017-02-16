@@ -1,10 +1,9 @@
 ###
-- name: ntpd package
+- name: ntpd package installed
   yum: name=ntp state=latest
 
-- name: Disable chronyd service
-  service: name=chronyd state=stopped enabled=no
-  ignore_errors: yes
+- name: chrony package removed
+  yum: name=chrony state=absent
 
 - name: setup configuration file
   template: src=ntp.conf.j2 dest=/etc/ntp.conf
