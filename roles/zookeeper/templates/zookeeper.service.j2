@@ -9,10 +9,10 @@ After=network.target remote-fs.target
 Type=forking
 User=zookeeper
 Group=zookeeper
-ExecStart="{{zk_home}}/bin/zkServer.sh" start
-ExecStop="{{zk_home}}/bin/zkServer.sh" stop
-ExecReload="{{zk_home}}/bin/zkServer.sh" restart
-WorkingDirectory="{{zk_data_dir}}"
+ExecStart={{zk_home}}/bin/zkServer.sh start
+ExecStop={{zk_home}}/bin/zkServer.sh stop
+ExecReload={{zk_home}}/bin/zkServer.sh restart
+WorkingDirectory={{zk_data_dir}}
 
 [Install]
 WantedBy=multi-user.target
