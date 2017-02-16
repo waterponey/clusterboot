@@ -6,7 +6,7 @@ Description=ZooKeeper
 Type=simple
 User=zookeeper
 Group=zookeeper
-ExecStart={{zk_home}}/bin/zkServer.sh start-foreground
+ExecStart="{{zk_home}}/bin/zkServer.sh start-foreground"
 
 TimeoutSec=300
 
