@@ -37,7 +37,7 @@
   with_items:
     - zoo.cfg
     - log4j.properties
-    - zookeeper-env.sh
+#    - zookeeper-env.sh
 
 - name: Enable zookeeper
   service: name=zookeeper enabled=yes state=restarted
