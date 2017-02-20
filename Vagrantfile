@@ -77,6 +77,23 @@ Vagrant.configure("2") do |config|
       node.vm.network :private_network, ip: "192.168.42.10#{i}"
       node.vm.provision :file, source: "~/.vagrant.d/insecure_private_key", destination:"~/.ssh/id_rsa"
 
+      # configure parallel provisionning using ansible
+      #if i == $num_instances
+      #  node.vm.provision "ansible" do |ansible|
+      #    ansible.verbose = "v"
+      #    ansible.limit="all"
+      #    ansible.playbook = "playbook.yml"
+      #    ansible.host_vars = {
+      #      "centos-01" => {"zoo_id" => 1},
+      #      "centos-02" => {"zoo_id" => 2},
+      #      "centos-03" => {"zoo_id" => 3}
+      #    }
+      #    ansible.groups = {
+      #      "masters" => ["centos-0[1:3]"],
+      #      "slaves"  => ["centos-0[4:6]"]
+      #    }
+      #  end
+      #end
     end
   end
 

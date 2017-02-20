@@ -1,0 +1,25 @@
+###
+#
+# We use environment variable to configure the services according to
+#
+#   http://mesos.apache.org/documentation/latest/configuration/
+###
+
+## Masters and agents options
+MESOS_CLUSTER={{mesos_cluster}}
+MESOS_CONTAINERIZERS={{mesos_containerizers}}
+MESOS_HOSTNAME={{mesos_hostname}}
+
+## Logging options
+# TODO
+MESOS_LOG_DIR={{mesos_log_dir}}
+# MESOS_LOGGING_LEVEL
+
+## Master options
+MESOS_QUORUM={{mesos_quorum}}
+MESOS_ZK={{mesos_zk}}
+# MESOS_WORK_DIR= setup in the systemd conf file
+
+## Agent options
+MESOS_MASTER={{mesos_zk}}
+# MESOS_WORK_DIR= setup in the systemd conf file

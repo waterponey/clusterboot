@@ -1,4 +1,4 @@
-# Mesos slaves
+# Mesos agents
 # Ansible managed
 {% for host in groups['slaves'] %}
 {{ hostvars[host]['ansible_' + iface]['ipv4']['address'] }}

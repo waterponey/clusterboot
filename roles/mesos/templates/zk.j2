@@ -1,1 +1,0 @@
-zk://{{ groups.masters | join(':' + zookeeper_client_port + ',')  }}:{{ zookeeper_client_port  }}/mesos

@@ -1,6 +1,12 @@
 - name: Check DNS resolver
   lineinfile: dest=/etc/resolv.conf regexp='^nameserver' line='nameserver {{ dns_ip }}'
 
+- name: Remove problematic line for Vagrant vms
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '^127\.0\.0\.1\s*{{ansible_hostname}}'
+    state: absent
+
 - name: Physically clean repositories
   file: path=/etc/yum.repos.d state=absent
   when: is_offline == True
@@ -27,6 +33,7 @@
 - name: Install required packages
   yum: name={{ item }} state=latest
   with_items:
+    - telnet
     - net-tools
     - git
     - vim
