@@ -1,0 +1,16 @@
+# {{ansible_managed}}
+[Unit]
+Description=Apache Hadoop Namenode service
+Documentation=http://hadoop.apache.org
+Requires=network.target remote-fs.target zookeeper.service
+After=network.target remote-fs.target zookeeper.service
+
+[Service]
+Type=forking
+User=hdfs
+Group=hadoop
+ExecStart={{hadoop_home}}/sbin/hadoop-daemon.sh start namenode
+WorkingDirectory={{hdfs_home}}
+
+[Install]
+WantedBy=multi-user.target

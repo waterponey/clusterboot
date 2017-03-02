@@ -6,5 +6,9 @@
     mode: 0744
 
 - name: install conda
-  command: /opt/src/{{anaconda_binary}} -b -p {{anaconda_target_path}}
-  
+  shell: /opt/src/{{anaconda_binary}} -b -p {{anaconda_target_path}}
+  args:
+    creates: {{anaconda_target_path}}/anaconda3
+
+- name: add conda to path
+  lineinfile: dest=/etc/profile line='PATH=/usr/local/lib/anaconda3/bin:$PATH'

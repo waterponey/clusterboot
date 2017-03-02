@@ -1,0 +1,38 @@
+---
+# Download configuration
+hadoop_version: 2.7.3
+hadoop_download_dir: /opt/src
+hadoop_url: http://www-eu.apache.org/dist/hadoop/common
+hadoop_archive: hadoop-{{hadoop_version}}.tar.gz
+hadoop_archive_url: "{{hadoop_url}}/hadoop-{{hadoop_version}}/{{hadoop_archive}}"
+hadoop_md5: 3455BB57E4B4906BBEA67B58CCA78FA8
+
+# Install configuration
+hdfs_home: /var/lib/hdfs
+yarn_home: /var/lib/yarn
+
+hadoop_lib_dir: /usr/local/lib
+hadoop_home: /usr/local/lib/hadoop
+hadoop_conf_dir: /etc/hadoop
+hadoop_log_dir: /var/log/hadoop
+
+# Global architecture
+isHA: no
+namenode_hostname: "{{hostvars[groups['masters'][0]]['inventory_hostname']}}"
+secondnn_hostname: "{{hostvars[groups['masters'][1]]['inventory_hostname']}}"
+datanode_group: slaves
+
+# hadoop-env.sh variables
+java_home: /usr/lib/jvm/java
+hadoop_heapsize: 1024
+hadoop_namenode_heapsize: "-Xms1024m"
+
+# core-site.xml variables
+namenode_uri: hdfs://{{hostvars[groups['masters'][0]]['inventory_hostname']}}
+
+# hdfs-site.xml variables
+namenode_dirs:
+  - /data/hdfs/nn
+datanode_dirs:
+  - /data/hdfs/dn
+failed_volumes: 0

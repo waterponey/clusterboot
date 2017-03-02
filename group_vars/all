@@ -1,9 +1,11 @@
 ---
-is_offline: False
+is_offline: false
+
+bootstrap: false
 
 ansible_become: true
 
-dns_ip: # The IP Adress for your DNS server
+dns_ip: 10.0.2.3 # The IP Adress for your DNS server
 
 repo_url: # The url for your HTTP file server
 repos:
@@ -37,6 +39,7 @@ scala_url: http://downloads.lightbend.com/scala
 # reference : https://repo.continuum.io/archive/Anaconda3-2.5.0-Linux-x86_64.sh
 anaconda_url: https://repo.continuum.io/archive
 
-
+hadoop_users:
+  - vagrant
 
 spark_url: # The url to download spark.

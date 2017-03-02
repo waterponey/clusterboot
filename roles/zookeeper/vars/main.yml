@@ -4,10 +4,11 @@ zk_download_dir: /opt/src
 zk_url: http://mirrors.ircam.fr/pub/apache/zookeeper/zookeeper-{{zk_version}}
 zk_archive: zookeeper-{{zk_version}}.tar.gz
 zk_archive_url: "{{zk_url}}/{{zk_archive}}"
+zk_md5: 3e8506075212c2d41030d874fcc9dcd2
 
-zk_lib_dir: /usr/share/zookeeper
-zk_home: "{{zk_lib_dir}}/zookeeper-{{zk_version}}"
-zk_conf_dir: "{{zk_home}}/conf"
+zk_home: /var/run/zookeeper
+zk_lib_dir: /usr/local/lib
+zk_conf_dir: /etc/zookeeper/
 
 client_port: 2181
 init_limit: 10

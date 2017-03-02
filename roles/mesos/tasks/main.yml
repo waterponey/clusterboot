@@ -19,13 +19,16 @@
   with_items:
     - "{{mesos_download_dir}}"
     - "{{mesos_conf_dir}}"
-    - "{{mesos_lib_dir}}"
+    - "{{mesos_lib_dir}}-{{mesos_version}}"
     - "{{mesos_log_dir}}"
     - "{{master_work_dir}}"
     - "{{agent_work_dir}}"
 
 - name: Download archive
-  get_url: url={{mesos_archive_url}} dest={{mesos_download_dir}}
+  get_url:
+    url: "{{mesos_archive_url}}"
+    dest: "{{mesos_download_dir}}"
+    checksum: md5:{{mesos_md5}}
 
 - name: Extract mesos
   unarchive:
@@ -37,7 +40,7 @@
   file: path={{mesos_build_dir}} state=directory
 
 - name: Configure build
-  shell: ../configure --prefix={{mesos_lib_dir}} --exec-prefix={{mesos_bin_dir}}
+  shell: ../configure --prefix={{mesos_lib_dir}}-{{mesos_version}}
   args:
     chdir: "{{mesos_build_dir}}"
     creates: Makefile
@@ -45,11 +48,19 @@
 - name: Make
   make:
     chdir: "{{mesos_build_dir}}"
+    params:
+      j: 2
 
 - name: Make install
   make:
     chdir: "{{mesos_build_dir}}"
     target: install
+
+- name: Create link between generic mesos dir to specific version dir
+  file:
+    path: "{{mesos_lib_dir}}"
+    src: "{{mesos_lib_dir}}-{{mesos_version}}"
+    state: link
 
 - name: Setup configuration file
   template: src=mesos-env.sh.j2 dest={{mesos_conf_dir}}/mesos-env.sh

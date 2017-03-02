@@ -6,9 +6,10 @@ mesos_download_dir: /opt/src
 mesos_url: http://www.apache.org/dist/mesos
 mesos_archive: mesos-{{mesos_version}}.tar.gz
 mesos_archive_url: "{{mesos_url}}/{{mesos_version}}/{{mesos_archive}}"
+mesos_md5: FF89748A6668425D462DCAA12608CF8A
 
 # Build vars
-mesos_lib_dir: /usr/share/mesos/mesos-{{mesos_version}}
+mesos_lib_dir: /usr/local/lib/mesos
 mesos_bin_dir: "{{mesos_lib_dir}}"
 mesos_build_dir: /opt/src/mesos-{{mesos_version}}/build
 

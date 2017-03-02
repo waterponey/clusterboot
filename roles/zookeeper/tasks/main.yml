@@ -7,7 +7,11 @@
 
 - group: name=zookeeper system=yes
 
-- user: name=zookeeper group=zookeeper system=yes
+- user:
+    name: zookeeper
+    group: zookeeper
+    home: "{{zk_home}}"
+    system: yes
 
 - name: Ensure download directory exists
   file: path={{zk_download_dir}} state=directory
@@ -21,7 +25,10 @@
     - "{{zk_conf_dir}}"
 
 - name: Download zookeeper version.
-  get_url: url={{zk_archive_url}} dest={{zk_download_dir}}/{{zk_archive}}
+  get_url:
+    url: "{{zk_archive_url}}"
+    dest: "{{zk_download_dir}}/{{zk_archive}}"
+    checksum: md5:{{zk_md5}}
 
 - name: Extract zookeeper archive
   unarchive:
@@ -31,18 +38,45 @@
     owner: zookeeper
     group: zookeeper
 
+- name: Create link between generic zookeeper dir to specific version dir
+  file:
+    path: "{{zk_lib_dir}}/zookeeper"
+    src: "{{zk_lib_dir}}/zookeeper-{{zk_version}}"
+    owner: zookeeper
+    group: zookeeper
+    state: link
+
 - name: Write myid file.
   template: src=myid.j2 dest={{zk_data_dir}}/myid owner=zookeeper group=zookeeper
-
-- name: Write systemd service file
-  template: src=zookeeper.service.j2 dest=/etc/systemd/system/zookeeper.service
 
 - name: Write conf {{item}}
   template: src={{item}}.j2 dest={{zk_conf_dir}}/{{item}} owner=zookeeper group=zookeeper
   with_items:
     - zoo.cfg
     - log4j.properties
+    - configuration.xsl
 #    - zookeeper-env.sh
+
+- name: Remove old config directory
+  file:
+    path: "{{zk_lib_dir}}/zookeeper/conf"
+    state: absent
+
+- name: Link config directory
+  file:
+    path: "{{zk_lib_dir}}/zookeeper/conf"
+    src: "{{zk_conf_dir}}"
+    follow: yes
+    state: link
+    force: yes
+
+- name: Add binaries to path
+  lineinfile:
+    dest: /etc/profile
+    line: export PATH={{zk_lib_dir}}/zookeeper/bin:$PATH
+
+- name: Write systemd service file
+  template: src=zookeeper.service.j2 dest=/etc/systemd/system/zookeeper.service
 
 - name: Enable zookeeper
   service: name=zookeeper enabled=yes state=restarted
