@@ -21,6 +21,10 @@
   <property>
     <name>dfs.namenode.name.dir</name>
     <value>file://{{namenode_dirs | join(',file://')}}</value>
+  </property>>
+  <property>
+    <name>dfs.namenode.checkpoint.dir</name>
+    <value>file://{{secondnn_dirs | join(',file://')}}</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>

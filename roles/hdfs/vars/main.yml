@@ -33,6 +33,8 @@ namenode_uri: hdfs://{{hostvars[groups['masters'][0]]['inventory_hostname']}}
 # hdfs-site.xml variables
 namenode_dirs:
   - /data/hdfs/nn
+secondnn_dirs:
+  - /data/hdfs/sn
 datanode_dirs:
   - /data/hdfs/dn
 failed_volumes: 0

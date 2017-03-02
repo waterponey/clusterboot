@@ -111,11 +111,28 @@
   with_items: "{{namenode_dirs}}"
   when: "inventory_hostname == namenode_hostname"
 
+- name: Create secondary data directory
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: hdfs
+    group: hadoop
+    recurse: yes
+    mode: 0700
+  with_items: "{{secondnn_dirs}}"
+  when: "inventory_hostname == secondnn_hostname"
+
 - name: Add namenode service file
   template:
     src: namenode.service.j2
     dest: /etc/systemd/system/namenode.service
-  when: "inventory_hostname == hostvars[groups['masters'][0]]['inventory_hostname']"
+  when: "inventory_hostname == namenode_hostname"
+
+- name: Add secondary service file
+  template:
+    src: secondary.service.j2
+    dest: /etc/systemd/system/secondary.service
+  when: "inventory_hostname == secondnn_hostname"
 
 - name: Create datanode data directory
   file:
@@ -138,14 +155,14 @@
   shell: "{{hadoop_home}}/bin/hdfs namenode -format"
   become_user: hdfs
   when:
-    - "inventory_hostname == hostvars[groups['masters'][0]]['inventory_hostname']"
+    - "inventory_hostname == namenode_hostname"
     - bootstrap
 
 - name: Create base directories
   shell: "{{hadoop_home}}/bin/hadoop fs -mkdir {{item}}"
   become_user: hdfs
   when:
-    - "inventory_hostname == hostvars[groups['masters'][0]]['inventory_hostname']"
+    - "inventory_hostname == namenode_hostname"
     - bootstrap
   with_items:
     - /shared
@@ -156,7 +173,7 @@
   shell: "{{hadoop_home}}/bin/hadoop fs -mkdir /user/{{item}}"
   become_user: "{{item}}"
   when:
-    - "inventory_hostname == hostvars[groups['masters'][0]]['inventory_hostname']"
+    - "inventory_hostname == namenode_hostname"
     - bootstrap
   with_items: "{{hadoop_users}}"
 
@@ -171,7 +188,14 @@
     name: namenode
     enabled: yes
     state: started
-  when: "inventory_hostname == hostvars[groups['masters'][0]]['inventory_hostname']"
+  when: "inventory_hostname == namenode_hostname"
+
+- name: Start secondary namenode
+  service:
+    name: secondary
+    enabled: yes
+    state: started
+  when: "inventory_hostname == secondnn_hostname"
 
 - name: Start datanode
   service:
