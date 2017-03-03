@@ -1,10 +1,16 @@
 ---
-spark_version: "1.6.0"
-spark_version_name: "spark-{{spark_version}}-bin-hadoop2.6"
+  # Download conf
+spark_version: 2.1.0
+spark_download_dir: /opt/src
+spark_url: http://apache.mediamirrors.org/spark
+spark_version_name: spark-{{spark_version}}-bin-hadoop2.7
 spark_archive_file: "{{spark_version_name}}.tgz"
-spark_download_url: "http://d3kbcqa49mib13.cloudfront.net/{{spark_archive_file}}"
+spark_download_url: "{{spark_url}}/spark-{{spark_version}}/{{spark_archive_file}}"
+spark_md5: 50E73F255F9BDE50789AD5BD657C7A71
 
-spark_lib_path: "/usr/lib/spark"
-spark_lib_path_target: "{{spark_lib_path}}/{{spark_version_name}}"
-spark_link_target: "/usr/bin"
-
+# Install conf
+spark_lib_dir: "/usr/local/lib"
+spark_conf_dir: "/etc/spark"
+spark_target: "{{spark_lib_dir}}/{{spark_version_name}}"
+spark_home: "{{spark_lib_dir}}/spark"
+spark_bin_dir: "/usr/local/bin"

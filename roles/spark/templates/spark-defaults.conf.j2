@@ -19,10 +19,10 @@
 # This is useful for setting default environmental settings.
 
 # Example:
-spark.master                     mesos://zk://master01:2181,master02:2181,master03:2181/mesos
+spark.master                     mesos://zk://centos-01:2181,centos-02:2181,centos-03:2181/mesos
 # spark.eventLog.enabled           true
 # spark.eventLog.dir               hdfs://namenode:8021/directory
 # spark.serializer                 org.apache.spark.serializer.KryoSerializer
 spark.driver.memory              5g
 spark.executor.extraJavaOptions  -XX:+PrintGCDetails -Dkey=value -Dnumbers="one two three"
-spark.mesos.executor.home	 /usr/lib/spark/spark-1.6.0-bin-hadoop2.6
+spark.mesos.executor.home	 /usr/local/lib/spark

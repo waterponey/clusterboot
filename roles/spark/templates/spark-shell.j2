@@ -1,6 +1,3 @@
 #!/bin/bash
 
-# Autodetect JAVA_HOME if not defined
-. /usr/lib/bigtop-utils/bigtop-detect-javahome
-
-exec {{spark_lib_path_target}}/bin/spark-shell "$@"
+exec {{spark_home}}/bin/spark-shell "$@"

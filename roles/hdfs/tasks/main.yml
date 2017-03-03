@@ -158,31 +158,6 @@
     - "inventory_hostname == namenode_hostname"
     - bootstrap
 
-- name: Create base directories
-  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir {{item}}"
-  become_user: hdfs
-  when:
-    - "inventory_hostname == namenode_hostname"
-    - bootstrap
-  with_items:
-    - /shared
-    - /tmp
-    - /user
-
-- name: Create user directories
-  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir /user/{{item}}"
-  become_user: "{{item}}"
-  when:
-    - "inventory_hostname == namenode_hostname"
-    - bootstrap
-  with_items: "{{hadoop_users}}"
-
-- name: add hadoop user to group
-  user:
-    name: "{{item}}"
-    groups: hadoop
-  with_items: "{{hadoop_users}}"
-
 - name: Start namenode
   service:
     name: namenode
@@ -203,3 +178,28 @@
     enabled: yes
     state: started
   when: "'slaves' in group_names"
+
+- name: add hadoop user to group
+  user:
+    name: "{{item}}"
+    groups: hadoop
+  with_items: "{{hadoop_users}}"
+
+- name: Create base directories
+  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir {{item}}"
+  become_user: hdfs
+  when:
+    - "inventory_hostname == namenode_hostname"
+    - bootstrap
+  with_items:
+    - /shared
+    - /tmp
+    - /user
+
+- name: Create user directories
+  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir /user/{{item}}"
+  become_user: "{{item}}"
+  when:
+    - "inventory_hostname == namenode_hostname"
+    - bootstrap
+  with_items: "{{hadoop_users}}"

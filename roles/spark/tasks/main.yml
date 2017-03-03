@@ -1,62 +1,59 @@
 ---
-- name: Create /opt/src
-  file: path=/opt/src state=directory recurse=yes
+- name: Ensure download directory exists
+  file: path={{spark_download_dir}} state=directory recurse=yes
 
-- name: Create spark lib dir
-  file: path={{spark_lib_path}} state=directory recurse=yes
+- name: Download spark
+  get_url:
+    url: "{{spark_download_url}}"
+    dest: "{{spark_download_dir}}/{{spark_archive_file}}"
+    checksum: md5:{{spark_md5}}
 
-- name: Download spar v{{spark_version}}
-  get_url: url={{spark_download_url}}
-    dest=/opt/src/{{spark_archive_file}}
+- name: Extract spark
+  unarchive:
+    src: "{{spark_download_dir}}/{{spark_archive_file}}"
+    dest: "{{spark_lib_dir}}"
+    copy: no
+    creates: "{{spark_target}}"
 
-- name: Download spark binary
-  unarchive: src=/opt/src/{{spark_archive_file}} dest={{spark_lib_path}} copy=no
-
-#- name: Link configuration directory
-#  copy: 
-#    remote_src=True 
-#    src={{spark_lib_path_target}}/conf 
-#    dest=/etc/spark/conf.empty
-#        
-
-- name: Create /etc/spark
-  file: path=/etc/spark state=directory
-
-- name: empty conf
-  stat: path={{spark_lib_path_target}}/conf.empty
-  register: empty_conf
-
-- name: Save conf directory
-  command: cp -r {{spark_lib_path_target}}/conf {{spark_lib_path_target}}/conf.empty
-  when: empty_conf.stat.isdir is not defined or empty_conf.stat.isdir == False
-
-- name: Create Custom conf directory
-  command: cp -r {{spark_lib_path_target}}/conf.empty /etc/spark/conf.cmap
-
-- name: Delete old conf
+- name: Link generic spark dir to specific version directory
   file:
-    path={{spark_lib_path_target}}/conf
-    state=absent
+    path: "{{spark_home}}"
+    src: "{{spark_target}}"
+    state: link
 
-- name: Link Spark conf
-  file: 
-    path={{spark_lib_path_target}}/conf
-    state=link
-    force=yes
-    src=/etc/spark/conf.cmap
+- name: Ensure configuration directory exists
+  file: path={{spark_conf_dir}} state=directory
 
-- name: add executable
-  template: src={{item}}.j2 dest=/usr/bin/{{item}} owner=root group=root mode=0755
+- name: Remove old conf
+  file: path={{spark_home}}/conf state=absent
+
+- name: Link Spark configuration directory
+  file:
+    path: "{{spark_home}}/conf"
+    src: "{{spark_conf_dir}}"
+    state: link
+    force: yes
+
+- name: Add executable scripts
+  template:
+    src: "{{item}}.j2"
+    dest: "{{spark_bin_dir}}/{{item}}"
+    owner: root
+    group: root
+    mode: 0755
   with_items:
     - spark-shell
     - spark-executor
     - spark-submit
     - pyspark
 
-
-
-- name: add conf file
-  template: src={{item}}.j2 dest=/etc/spark/conf.cmap/{{item}} owner=root group=root mode=0755
+- name: Add conf file
+  template:
+    src: "{{item}}.j2"
+    dest: "{{spark_conf_dir}}/{{item}}"
+    owner: root
+    group: root
+    mode: 0755
   with_items:
     - spark-env.sh
     - spark-defaults.conf
