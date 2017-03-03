@@ -14,3 +14,7 @@ spark_conf_dir: "/etc/spark"
 spark_target: "{{spark_lib_dir}}/{{spark_version_name}}"
 spark_home: "{{spark_lib_dir}}/spark"
 spark_bin_dir: "/usr/local/bin"
+spark_workdir: "/var/lib/spark"
+
+# History server
+history_hostname: "{{hostvars[groups['masters'][2]]['inventory_hostname']}}"
