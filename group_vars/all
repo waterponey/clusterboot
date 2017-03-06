@@ -1,4 +1,9 @@
 ---
+################################################################################
+#
+# REQUIRED PARAMETERS !!!!
+#
+################################################################################
 is_offline: false
 
 bootstrap: false
@@ -7,6 +12,15 @@ ansible_become: true
 
 dns_ip: 10.0.2.3 # The IP Adress for your DNS server
 
+hadoop_users:
+  - vagrant
+
+################################################################################
+#
+# REQUIRED PARAMETERS FOR OFFLINE CLUSTERS
+#
+################################################################################
+
 repo_url: # The url for your HTTP file server
 repos:
   - base: "{{ repo_url }}/Centos/base"
@@ -14,16 +28,6 @@ repos:
   - extras: "{{ repo_url }}/Centos/extras"
   - centosplus: "{{ repo_url }}/Centos/centosplus"
   - epel: "{{ repo_url }}/Centos/epel"
-  # reference : https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/5/
-  - cloudera-cdh5: "{{ repo_url }}/cloudera"
-  # reference : http://repos.mesosphere.com/el/7/x86_64/RPMS/
-  - mesosphere: "{{ repo_url }}/Mesosphere/mesosphere"
-  # reference : http://repos.mesosphere.com/el/7/noarch/
-  - mesosphere-noarch: "{{ repo_url }}/Mesosphere/mesosphere-noarch"
-  # reference : http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.5.0.0/HDP-2.5.0.0-centos7-rpm.tar.gz
-  - hdp: "{{ repo_url }}/hortonworks/HDP-2.5.0.0"
-  # reference : http://public-repo-1.hortonworks.com/HDP-UTILS-1.1.0.21/repos/centos7/HDP-UTILS-1.1.0.21-centos7.tar.gz
-  - hdp-utils: "{{ repo_url }}/hortonworks/HDP-UTILS-1.1.0.21"
   # reference : http://dl.bintray.com/sbt/rpm
   - bintray: "{{ repo_url }}/bintray"
   # reference : https://repo.continuum.io/pkgs/
@@ -38,8 +42,5 @@ scala_url: http://downloads.lightbend.com/scala
 # the root of the url to download anaconda
 # reference : https://repo.continuum.io/archive/Anaconda3-2.5.0-Linux-x86_64.sh
 anaconda_url: https://repo.continuum.io/archive
-
-hadoop_users:
-  - vagrant
 
 spark_url: # The url to download spark.
