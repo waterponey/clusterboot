@@ -21,14 +21,14 @@
     name: hdfs
     group: hdfs
     groups: hadoop
-    home: "{{hdfs_home}}"
+    home: "{{hdfs_workdir}}"
     system: yes
 
 - user:
     name: yarn
     group: yarn
     groups: hadoop
-    home: "{{yarn_home}}"
+    home: "{{yarn_workdir}}"
     system: yes
 
 - name: Ensure download directory exists
@@ -182,6 +182,7 @@
 - name: add hadoop user to group
   user:
     name: "{{item}}"
+    append: yes
     groups: hadoop
   with_items: "{{hadoop_users}}"
 

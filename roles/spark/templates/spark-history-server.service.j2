@@ -8,8 +8,8 @@ After=network.target remote-fs.target
 [Service]
 Type=forking
 User=spark
-ExecStart={{spark_lib_dir}}/spark/sbin/start-history-server.sh
-ExecStop={{spark_lib_dir}}/spark/sbin/stop-history-server.sh
+ExecStart={{spark_home}}/sbin/start-history-server.sh
+ExecStop={{spark_home}}/sbin/stop-history-server.sh
 WorkingDirectory={{spark_workdir}}
 
 [Install]

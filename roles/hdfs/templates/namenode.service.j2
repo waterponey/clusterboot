@@ -10,7 +10,7 @@ Type=forking
 User=hdfs
 Group=hadoop
 ExecStart={{hadoop_home}}/sbin/hadoop-daemon.sh start namenode
-WorkingDirectory={{hdfs_home}}
+WorkingDirectory={{hdfs_workdir}}
 
 [Install]
 WantedBy=multi-user.target

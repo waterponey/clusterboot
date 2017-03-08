@@ -16,4 +16,6 @@
 #
 
 # A Spark Worker will be started on each of the machines listed below.
-localhost
+{% for host in groups['slaves'] %}
+{{ host }}
+{% endfor %}

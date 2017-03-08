@@ -16,5 +16,13 @@ spark_home: "{{spark_lib_dir}}/spark"
 spark_bin_dir: "/usr/local/bin"
 spark_workdir: "/var/lib/spark"
 
+# Spark-env conf
+hadoop_conf_dir: /etc/hadoop
+mesos_master: mesos://zk://{{ groups.masters | join(':' + zookeeper_client_port + ',')  }}:{{ zookeeper_client_port  }}/mesos
+mesos_lib: /usr/local/lib/mesos/lib/libmesos.so
+
 # History server
 history_hostname: "{{hostvars[groups['masters'][2]]['inventory_hostname']}}"
+
+spark_log_dir: /var/log/spark
+spark_run_dir: /var/run/spark

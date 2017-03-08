@@ -4,14 +4,20 @@
 # REQUIRED PARAMETERS !!!!
 #
 ################################################################################
+# Do you have internet access on your cluster ?
 is_offline: false
 
+# This should stay as false. Will Format HDFS otherwise
 bootstrap: false
 
-ansible_become: true
+# Are you using an account that needs to sudo ?
+ansible_become: yes
 
-dns_ip: 10.0.2.3 # The IP Adress for your DNS server
+# The IP Adress for your DNS server (usually in /etc/resolv.conf)
+# Vagrant's default is 10.0.2.3
+dns_ip: 10.0.2.3
 
+# List here the unix user account that'll require an access to hdfs
 hadoop_users:
   - vagrant
 

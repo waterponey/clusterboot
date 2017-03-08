@@ -12,6 +12,8 @@
   unarchive:
     src: "{{spark_download_dir}}/{{spark_archive_file}}"
     dest: "{{spark_lib_dir}}"
+    owner: root
+    group: root
     copy: no
     creates: "{{spark_target}}"
 

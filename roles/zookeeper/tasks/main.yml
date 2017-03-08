@@ -55,7 +55,7 @@
     - zoo.cfg
     - log4j.properties
     - configuration.xsl
-#    - zookeeper-env.sh
+    - zookeeper-env.sh
 
 - name: Remove old config directory
   file:

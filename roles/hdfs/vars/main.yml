@@ -8,8 +8,8 @@ hadoop_archive_url: "{{hadoop_url}}/hadoop-{{hadoop_version}}/{{hadoop_archive}}
 hadoop_md5: 3455BB57E4B4906BBEA67B58CCA78FA8
 
 # Install configuration
-hdfs_home: /var/lib/hdfs
-yarn_home: /var/lib/yarn
+hdfs_workdir: /var/lib/hdfs
+yarn_workdir: /var/lib/yarn
 
 hadoop_lib_dir: /usr/local/lib
 hadoop_home: /usr/local/lib/hadoop
@@ -30,11 +30,15 @@ hadoop_namenode_heapsize: "-Xms1024m"
 # core-site.xml variables
 namenode_uri: hdfs://{{hostvars[groups['masters'][0]]['inventory_hostname']}}
 
-# hdfs-site.xml variables
+# hdfs-site.xml variables list here the relevant directories
 namenode_dirs:
   - /data/hdfs/nn
 secondnn_dirs:
   - /data/hdfs/sn
 datanode_dirs:
   - /data/hdfs/dn
+  # typically here you should have something like :
+  # - /disk1/hdfs/dn
+  # - /disk2/hdfs/dn
+  # - /disk3/hdfs/dn
 failed_volumes: 0
