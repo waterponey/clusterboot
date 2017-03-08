@@ -1,5 +1,7 @@
 ---
-anaconda_version: 2.5.0
+anaconda_version: 4.3.0.1
 anaconda_binary: "Anaconda3-{{anaconda_version}}-Linux-x86_64.sh"
 anaconda_download_url: "https://repo.continuum.io/archive/{{anaconda_binary}}"
-anaconda_target_path: /usr/lib/anaconda3
+
+anaconda_lib_dir: /usr/local/lib/
+anaconda_home: "{{anaconda_lib_dir}}/anaconda3"

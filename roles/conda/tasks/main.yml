@@ -11,4 +11,4 @@
     creates: {{anaconda_target_path}}/anaconda3
 
 - name: add conda to path
-  lineinfile: dest=/etc/profile line='PATH=/usr/local/lib/anaconda3/bin:$PATH'
+  lineinfile: dest=/etc/profile line='PATH={{anaconda_home}}/bin:$PATH'
