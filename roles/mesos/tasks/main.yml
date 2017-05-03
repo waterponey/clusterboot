@@ -38,18 +38,34 @@
 
 - name: Ensure build directory exists
   file: path={{mesos_build_dir}} state=directory
+  when: not is_offline
 
 - name: Configure build
   shell: ../configure --prefix={{mesos_lib_dir}}-{{mesos_version}}
   args:
     chdir: "{{mesos_build_dir}}"
     creates: Makefile
+  when: not is_offline
 
 - name: Make
   make:
     chdir: "{{mesos_build_dir}}"
     params:
       j: 2
+  when: not is_offline
+
+- name: Download pre-build tar
+  get_url:
+    url: "{{mesos_build_url}}/build.tar"
+    dest: "{{mesos_src_dir}}"
+  when: is_offline
+
+- name: Extract pre-build tar
+  unarchive:
+    src: "{{mesos_src_dir}}/build.tar"
+    dest: "{{mesos_src_dir}}"
+    remote_src: yes
+  when: is_offline
 
 - name: Make install
   make:

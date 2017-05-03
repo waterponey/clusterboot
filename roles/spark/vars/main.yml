@@ -2,7 +2,7 @@
   # Download conf
 spark_version: 2.1.0
 spark_download_dir: /opt/src
-spark_url: http://apache.mediamirrors.org/spark
+spark_url: "{{mirror_base_url}}/spark"
 spark_version_name: spark-{{spark_version}}-bin-hadoop2.7
 spark_archive_file: "{{spark_version_name}}.tgz"
 spark_download_url: "{{spark_url}}/spark-{{spark_version}}/{{spark_archive_file}}"

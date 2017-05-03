@@ -2,7 +2,7 @@
 # Download configuration
 hadoop_version: 2.7.3
 hadoop_download_dir: /opt/src
-hadoop_url: http://www-eu.apache.org/dist/hadoop/common
+hadoop_url: "{{mirror_base_url}}/hadoop/common"
 hadoop_archive: hadoop-{{hadoop_version}}.tar.gz
 hadoop_archive_url: "{{hadoop_url}}/hadoop-{{hadoop_version}}/{{hadoop_archive}}"
 hadoop_md5: 3455BB57E4B4906BBEA67B58CCA78FA8
@@ -32,13 +32,12 @@ namenode_uri: hdfs://{{hostvars[groups['masters'][0]]['inventory_hostname']}}
 
 # hdfs-site.xml variables list here the relevant directories
 namenode_dirs:
-  - /data/hdfs/nn
+  - "{{hdfs_workdir}}/nn"
 secondnn_dirs:
-  - /data/hdfs/sn
+  - "{{hdfs_workdir}}/sn"
 datanode_dirs:
-  - /data/hdfs/dn
   # typically here you should have something like :
   # - /disk1/hdfs/dn
   # - /disk2/hdfs/dn
   # - /disk3/hdfs/dn
-failed_volumes: 0
+failed_volumes: 3

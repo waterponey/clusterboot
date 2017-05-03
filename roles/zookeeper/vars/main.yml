@@ -1,7 +1,7 @@
 ---
 zk_version: 3.4.9
 zk_download_dir: /opt/src
-zk_url: http://mirrors.ircam.fr/pub/apache/zookeeper/zookeeper-{{zk_version}}
+zk_url:  "{{mirror_base_url}}/zookeeper/zookeeper-{{zk_version}}"
 zk_archive: zookeeper-{{zk_version}}.tar.gz
 zk_archive_url: "{{zk_url}}/{{zk_archive}}"
 zk_md5: 3e8506075212c2d41030d874fcc9dcd2

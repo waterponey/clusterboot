@@ -18,6 +18,7 @@ ansible_become: yes
 dns_ip: 10.0.2.3
 
 # List here the unix user account that'll require an access to hdfs
+# Vagrant default is vagrant
 hadoop_users:
   - vagrant
 
@@ -29,17 +30,15 @@ hadoop_users:
 
 repo_url: # The url for your HTTP file server
 repos:
-  - base: "{{ repo_url }}/Centos/base"
-  - updates: "{{ repo_url }}/Centos/updates"
-  - extras: "{{ repo_url }}/Centos/extras"
-  - centosplus: "{{ repo_url }}/Centos/centosplus"
-  - epel: "{{ repo_url }}/Centos/epel"
-  # reference : http://dl.bintray.com/sbt/rpm
-  - bintray: "{{ repo_url }}/bintray"
-  # reference : https://repo.continuum.io/pkgs/
-  - conda: "{{repo_url}}/conda"
+  base: "{{ repo_url }}/Centos/base"
+  updates: "{{ repo_url }}/Centos/updates"
+  extras: "{{ repo_url }}/Centos/extras"
+  epel: "{{ repo_url }}/Centos/epel"
+  conda: "{{repo_url}}/conda" # reference : https://repo.continuum.io/pkgs/
 
 ntp_server: # The FQDN of your ntp server
+
+mirror_base_url: http://mirrors.ircam.fr/pub/apache
 
 # the root of the url to download scala. Should be in the form http://myurl/{{scala-version}}/{{scala-binary-file}}
 # reference : http://downloads.lightbend.com/scala/2.11.8/scala-2.11.8.rpm

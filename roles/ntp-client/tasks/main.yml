@@ -6,7 +6,9 @@
   yum: name=chrony state=absent
 
 - name: setup configuration file
-  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  lineinfile:
+    dest: /etc/ntp.conf
+    line: 'server {{ntp_server}} iburst'
   when: is_offline == True
 
 - name: launch ntpd service
