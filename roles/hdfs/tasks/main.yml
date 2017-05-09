@@ -1,162 +1,206 @@
 ---
-- name: Ensure Cloudera repo is present
-  yum: 
-    name=cloudera-cdh 
-    state=present
-
-- name: lzo package
-  yum:
-    name=lzo-devel
-    state=latest
-
-- name: hadoop-client package
-  yum:
-    name=hadoop-client
-    state=latest
-  when: "'clients' in group_names"
-
-- name: Namenode package
-  yum: 
-    name=hadoop-hdfs-namenode 
-    state=latest
-  when: inventory_hostname == 'master01'
-
-- name: HistoryServer package
-  yum: 
-    name=hadoop-yarn-resourcemanager,hadoop-mapreduce-historyserver,hadoop-yarn-proxyserver
-    state=latest
-  when: inventory_hostname == 'master03'
-
-- name: Datanode package
-  yum:
-    name=hadoop-hdfs-datanode,hadoop-yarn-nodemanager,hadoop-mapreduce
-    state=latest
-  when: "'slaves' in group_names"
-
-##- name: Create Namenode conf directory
-##  copy: 
-##    src=/etc/hadoop/conf.empty 
-##    dest=/etc/hadoop/conf.cmap 
-##    directory_mode=yes
-##    remote_src=1
-##  when: inventory_hostname == 'master01'
-- name: Delete previous conf directory
-  file:
-    path=/etc/hadoop/conf.cmap
-    state=absent
-
-- name: Create Namenode conf directory
-  command: cp -r /etc/hadoop/conf.empty /etc/hadoop/conf.cmap
-#  when: (inventory_hostname == 'master01') or
-#        (inventory_hostname == 'master02') or
-#        ('slaves' in group_names)
-
-- name: Use alternative conf directory
-  alternatives: name=hadoop-conf link=/etc/hadoop/conf path=/etc/hadoop/conf.cmap
-#  when: (inventory_hostname == 'master01') or
-#        (inventory_hostname == 'master02') or
-#        ('slaves' in group_names)
-
-- name: Check core-site.xml
-  template: src=core-site.xml.j2 dest=/etc/hadoop/conf.cmap/core-site.xml
-#  when: (inventory_hostname == 'master01') or
-#        (inventory_hostname == 'master02') or
-#        ('slaves' in group_names)
-
-- name: Check hdfs-site.xml
-  template: src=hdfs-site.xml.j2 dest=/etc/hadoop/conf.cmap/hdfs-site.xml
-#  when: (inventory_hostname == 'master01') or
-#        (inventory_hostname == 'master02') or
-#        ('slaves' in group_names)
-
-- name: Check slaves
-  template: src=slaves.j2 dest=/etc/hadoop/conf.cmap/slaves
-#  when: (inventory_hostname == 'master01') or
-#        (inventory_hostname == 'master02') or
-#        ('slaves' in group_names)
-
-- name: Check yarn-site.xml
-  template: src=yarn-site.xml.j2 dest=/etc/hadoop/conf.cmap/yarn-site.xml
-
-- name: Check mapred-site.xml
-  template: src=mapred-site.xml.j2 dest=/etc/hadoop/conf.cmap/mapred-site.xml
-
-- name: Create DataNode data directory
-  file:
-    path={{ item }}
-    state=directory
-    owner=hdfs
-    group=hadoop
-    mode=700
+- name: Install package
+  yum: name={{item}} state=latest
   with_items:
-    - /mnt/disk1/hdfs/dn
-    - /mnt/disk2/hdfs/dn
-    - /mnt/disk3/hdfs/dn
-    - /mnt/disk4/hdfs/dn
-    - /mnt/disk5/hdfs/dn
-    - /mnt/disk6/hdfs/dn
-  when: "'slaves' in group_names"
+    - libselinux-python
+    - java-1.8.0-openjdk-devel
+    - nmap-ncat
+    - lzo-devel
 
-- name: Create NameNode data directory
-  file:
-    path=/data/hdfs/nn
-    state=directory
-    owner=hdfs
-    group=hdfs
-    mode=700
-  when: inventory_hostname == 'master01'
+- group: name=hadoop system=yes
+- group: name=hdfs system=yes
+- group: name=yarn system=yes
 
-- name: Add useless package
-  yum: name=fprintd-pam state=present
+- user:
+    name: hadoop
+    group: hadoop
+    createhome: no
+    system: yes
 
-- name: Format Namenode
-  become: yes
-  become_user: hdfs
-  shell:  yes 2>/dev/null | hdfs namenode -format
-  when: inventory_hostname == 'master01'
+- user:
+    name: hdfs
+    group: hdfs
+    groups: hadoop
+    home: "{{hdfs_workdir}}"
+    system: yes
 
-- name: Start NameNode
-  service: name=hadoop-hdfs-namenode state=restarted enabled=yes
-  when: inventory_hostname == 'master01'
+- user:
+    name: yarn
+    group: yarn
+    groups: hadoop
+    home: "{{yarn_workdir}}"
+    system: yes
 
-- name: Update permissions on /tmp dir to allow hadoop group write
-  become: yes
-  become_user: hdfs
-  shell: >
-    hadoop fs -mkdir /tmp;
-    hadoop fs -chmod -R 1777 /tmp;
-    hadoop fs -mkdir -p /user/history;
-    hadoop fs -chmod -R 1777 /user/history;
-    hadoop fs -chown mapred:hadoop /user/history;
-    hadoop fs -mkdir -p /var/log/hadoop-yarn;
-    hadoop fs -chown yarn:mapred /var/log/hadoop-yarn;
-    hadoop fs -mkdir /shared;
-    hadoop fs -chmod -R 1777 /shared;
-  when: inventory_hostname == 'master01'
+- name: Ensure download directory exists
+  file: path={{hadoop_download_dir}} state=directory
 
-- name: Start DataNode
-  service: name=hadoop-hdfs-datanode state=restarted enabled=yes
-  when: "'slaves' in group_names"
-
-- name: Create NodeManager data directory
-  file:
-    path={{ item }}
-    state=directory
-    owner=yarn
-    group=yarn
-    mode=755
+- name: Ensure hadoop directories exists
+  file: path={{item}} state=directory
   with_items:
-    - /mnt/disk1/yarn/logs
-    - /mnt/disk2/yarn/logs
-    - /mnt/disk3/yarn/logs
-    - /mnt/disk4/yarn/logs
-    - /mnt/disk5/yarn/logs
-    - /mnt/disk6/yarn/logs
-    - /mnt/disk1/yarn/local
-    - /mnt/disk2/yarn/local
-    - /mnt/disk3/yarn/local
-    - /mnt/disk4/yarn/local
-    - /mnt/disk5/yarn/local
-    - /mnt/disk6/yarn/local
+    - "{{hadoop_lib_dir}}"
+    - "{{hadoop_conf_dir}}"
+
+- name: Ensure hadoop log directories exists
+  file:
+    path: "{{hadoop_log_dir}}"
+    state: directory
+    owner: hadoop
+    group: hadoop
+    mode: 0774
+
+- name: Download hadoop binary
+  get_url:
+    url: "{{hadoop_archive_url}}"
+    dest: "{{hadoop_download_dir}}/{{hadoop_archive}}"
+    checksum: md5:{{hadoop_md5}}
+
+- name: Unarchive hadoop archive
+  unarchive:
+    src: "{{hadoop_download_dir}}/{{hadoop_archive}}"
+    dest: "{{hadoop_lib_dir}}"
+    copy: no
+    owner: hadoop
+    group: hadoop
+    creates: "{{hadoop_lib_dir}}/hadoop-{{hadoop_version}}"
+
+- name: Link generic hadoop dir to specific version directory
+  file:
+    path: "{{hadoop_home}}"
+    src: "{{hadoop_home}}-{{hadoop_version}}"
+    owner: hadoop
+    group: hadoop
+    state: link
+
+- name: Write configuration files
+  template:
+    src: "{{item}}.j2"
+    dest: "{{hadoop_conf_dir}}/{{item}}"
+    owner: hadoop
+    group: hadoop
+  with_items:
+    - hadoop-env.sh
+    - core-site.xml
+    - hdfs-site.xml
+    - log4j.properties
+
+- name: Remove old conf
+  file:
+    path: "{{hadoop_home}}/etc/hadoop"
+    state: absent
+
+- name: Link configuration directories
+  file:
+    path: "{{hadoop_home}}/etc/hadoop"
+    src: "{{hadoop_conf_dir}}"
+    state: link
+    force: yes
+
+- name: add hadoop binaries in PATH
+  lineinfile:
+    dest: /etc/profile
+    line: export PATH={{hadoop_home}}/bin:{{hadoop_home}}/sbin:$PATH
+
+- name: Create namenode data directory
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: hdfs
+    group: hadoop
+    recurse: yes
+    mode: 0700
+  with_items: "{{namenode_dirs}}"
+  when: "inventory_hostname == namenode_hostname"
+
+- name: Create secondary data directory
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: hdfs
+    group: hadoop
+    recurse: yes
+    mode: 0700
+  with_items: "{{secondnn_dirs}}"
+  when: "inventory_hostname == secondnn_hostname"
+
+- name: Add namenode service file
+  template:
+    src: namenode.service.j2
+    dest: /etc/systemd/system/namenode.service
+  when: "inventory_hostname == namenode_hostname"
+
+- name: Add secondary service file
+  template:
+    src: secondary.service.j2
+    dest: /etc/systemd/system/secondary.service
+  when: "inventory_hostname == secondnn_hostname"
+
+- name: Create datanode data directory
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: hdfs
+    group: hadoop
+    recurse: yes
+    mode: 0700
+  with_items: "{{datanode_dirs}}"
   when: "'slaves' in group_names"
 
+- name: Add datanode service file
+  template:
+    src: datanode.service.j2
+    dest: /etc/systemd/system/datanode.service
+  when: "'slaves' in group_names"
+
+- name: Format namenode
+  shell: "{{hadoop_home}}/bin/hdfs namenode -format"
+  become_user: hdfs
+  when:
+    - "inventory_hostname == namenode_hostname"
+    - bootstrap
+
+- name: Start namenode
+  service:
+    name: namenode
+    enabled: yes
+    state: started
+  when: "inventory_hostname == namenode_hostname"
+
+- name: Start secondary namenode
+  service:
+    name: secondary
+    enabled: yes
+    state: started
+  when: "inventory_hostname == secondnn_hostname"
+
+- name: Start datanode
+  service:
+    name: datanode
+    enabled: yes
+    state: started
+  when: "'slaves' in group_names"
+
+- name: add hadoop user to group
+  user:
+    name: "{{item}}"
+    append: yes
+    groups: hadoop
+  with_items: "{{hadoop_users}}"
+
+- name: Create base directories
+  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir {{item}}"
+  become_user: hdfs
+  when:
+    - "inventory_hostname == namenode_hostname"
+    - bootstrap
+  with_items:
+    - /shared
+    - /tmp
+    - /user
+
+- name: Create user directories
+  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir /user/{{item}}"
+  become_user: "{{item}}"
+  when:
+    - "inventory_hostname == namenode_hostname"
+    - bootstrap
+  with_items: "{{hadoop_users}}"

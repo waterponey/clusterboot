@@ -1,9 +1,10 @@
 - name: Check DNS resolver
   lineinfile: dest=/etc/resolv.conf regexp='^nameserver' line='nameserver {{ dns_ip }}'
 
-- name: Disable repositories
-  yum_repository:
-    name: "*"
+- name: Remove problematic line for Vagrant vms
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '^127\.0\.0\.1\s*{{ansible_hostname}}'
     state: absent
 
 - name: Physically clean repositories
@@ -26,15 +27,14 @@
   yum: name=epel-release state=present
   when: is_offline == False
 
-- name: Clean YUM cache
-  command: yum clean all
-
 - name: install the 'Development tools' package group
   yum: name="@Development tools" state=present
 
 - name: Install required packages
   yum: name={{ item }} state=latest
   with_items:
+    - telnet
+    - net-tools
     - git
     - vim
     - tmux
@@ -50,10 +50,10 @@
     - python-setuptools
     - python-pip
     - libgfortran
+    - openssl-devel
 
 - name: Upgrade all
   yum: name=* state=latest
-  serial: 4
 
 - name: Disable selinux
   selinux: state=disabled

@@ -1,0 +1,18 @@
+# {{ansible_managed}}
+[Unit]
+Description=Apache Mesos master daemon
+Documentation=http://mesos.apache.org
+Requires=network.target
+Wants=zookeeper.service
+After=network.target zookeeper.service
+
+[Service]
+Environment=MESOS_WORK_DIR={{agent_work_dir}}
+EnvironmentFile={{mesos_conf_dir}}/mesos-env.sh
+ExecStart={{mesos_bin_dir}}/sbin/mesos-agent
+Restart=always
+RestartSec=20
+LimitNOFILE=16384
+
+[Install]
+WantedBy=multi-user.target

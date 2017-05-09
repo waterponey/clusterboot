@@ -1,10 +1,14 @@
 ---
 - name: download the binary
   get_url:
-    url: {{anaconda_url}}
+    url: "{{anaconda_archive_url}}"
     dest: /opt/src/{{anaconda_binary}}
     mode: 0744
 
 - name: install conda
-  command: /opt/src/{{anaconda_binary}} -b -p {{anaconda_target_path}}
-  
+  shell: /opt/src/{{anaconda_binary}} -b -p {{anaconda_home}}
+  args:
+    creates: "{{anaconda_home}}"
+
+- name: add conda to path
+  lineinfile: dest=/etc/profile line='PATH={{anaconda_home}}/bin:$PATH'

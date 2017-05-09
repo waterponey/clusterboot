@@ -1,68 +1,102 @@
 ---
-- name: Add mesosphere repository
-  yum_repository:
-    name: mesosphere
-    description: Mesosphere Packages for EL 7 - $basearch
-    file: mesosphere.repo
-    baseurl: http://repos.mesosphere.com/el/7/$basearch/
-    gpgkey: https://repos.mesosphere.com/el/RPM-GPG-KEY-mesosphere
-    gpgcheck: yes
-    enabled: yes
+- name: Install package
+  yum: name={{item}} state=latest
+  with_items:
+    - maven
+    - python-devel
+    - java-1.8.0-openjdk-devel
+    - zlib-devel
+    - libcurl-devel
+    - openssl-devel
+    - cyrus-sasl-devel
+    - cyrus-sasl-md5
+    - apr-devel
+    - subversion-devel
+    - apr-util-devel
 
-- name: Add mesosphere-noarch repository
-  yum_repository:
-    name: mesosphere-noarch
-    description: Mesosphere Packages for EL 7 - noarch
-    file: mesosphere.repo
-    baseurl: http://repos.mesosphere.com/el/7/noarch/
-    gpgkey: https://repos.mesosphere.com/el/RPM-GPG-KEY-mesosphere
-    gpgcheck: yes
-    enabled: yes
+- name: Ensure directory exists
+  file: path={{item}} state=directory
+  with_items:
+    - "{{mesos_download_dir}}"
+    - "{{mesos_conf_dir}}"
+    - "{{mesos_lib_dir}}-{{mesos_version}}"
+    - "{{mesos_log_dir}}"
+    - "{{master_work_dir}}"
+    - "{{agent_work_dir}}"
 
-- name: Install mesos from repo
-  yum: name=mesos state=latest
+- name: Download archive
+  get_url:
+    url: "{{mesos_archive_url}}"
+    dest: "{{mesos_download_dir}}"
+    checksum: md5:{{mesos_md5}}
 
-- name: Install marathon on masters
-  yum: name=marathon state=latest
+- name: Extract mesos
+  unarchive:
+    src: "{{mesos_download_dir}}/{{mesos_archive}}"
+    dest: "{{mesos_download_dir}}"
+    copy: no
+
+- name: Ensure build directory exists
+  file: path={{mesos_build_dir}} state=directory
+  when: not is_offline
+
+- name: Configure build
+  shell: ../configure --prefix={{mesos_lib_dir}}-{{mesos_version}}
+  args:
+    chdir: "{{mesos_build_dir}}"
+    creates: Makefile
+  when: not is_offline
+
+- name: Make
+  make:
+    chdir: "{{mesos_build_dir}}"
+    params:
+      j: 2
+  when: not is_offline
+
+- name: Download pre-build tar
+  get_url:
+    url: "{{mesos_build_url}}/build.tar"
+    dest: "{{mesos_src_dir}}"
+  when: is_offline
+
+- name: Extract pre-build tar
+  unarchive:
+    src: "{{mesos_src_dir}}/build.tar"
+    dest: "{{mesos_src_dir}}"
+    remote_src: yes
+  when: is_offline
+
+- name: Make install
+  make:
+    chdir: "{{mesos_build_dir}}"
+    target: install
+
+- name: Create link between generic mesos dir to specific version dir
+  file:
+    path: "{{mesos_lib_dir}}"
+    src: "{{mesos_lib_dir}}-{{mesos_version}}"
+    state: link
+
+- name: Setup configuration file
+  template: src=mesos-env.sh.j2 dest={{mesos_conf_dir}}/mesos-env.sh
+
+- name: Setup systemd configuration for master
+  template:
+    src: mesos-master.service.j2
+    dest: /etc/systemd/system/mesos-master.service
   when: "'masters' in group_names"
 
-- name: Setup cluster name
-  template: src=cluster.j2 dest=/etc/mesos-master/cluster
-
-- name: Setup host name
-  template: src=hostname.j2 dest=/etc/mesos-slave/hostname
-
-- name: Setup containerizers
-  template: src=containerizers.j2 dest=/etc/mesos-slave/containerizers
-
-- name: Setup zookeeper connexion
-  template: src=zk.j2 dest=/etc/mesos/zk
-
-- name: Setup quorum
-  template: src=quorum.j2 dest=/etc/mesos-master/quorum
-  when: "'masters' in group_names"
-
-- name: Disable mesos-slave for masters
-  service: name=mesos-slave state=stopped enabled=no
-  when: "'masters' in group_names"
-
-- name: Disable mesos-master for slaves
-  service: name=mesos-master state=stopped enabled=no
-  when: "'slaves' in group_names"
-
-- name: Restart master
+- name: Start mesos-master
   service: name=mesos-master state=restarted enabled=yes
   when: "'masters' in group_names"
 
-- name: Restart marathon
-  service: name=marathon state=restarted enabled=yes
-  when: "'masters' in group_names"
+- name: Setup systemd configuration for agent
+  template:
+    src: mesos-agent.service.j2
+    dest: /etc/systemd/system/mesos-agent.service
+  when: "'slaves' in group_names"
 
-- name: Delete temp file
-  file:
-    path=/tmp/mesos
-    state=absent
-
-- name: Restart slave
-  service: name=mesos-slave state=restarted enabled=yes
+- name: Start mesos-agent
+  service: name=mesos-agent state=restarted enabled=yes
   when: "'slaves' in group_names"

@@ -1,2 +1,29 @@
 ---
-zookeeper_client_port: '2181'
+mesos_version: 1.1.0
+
+# Download vars
+mesos_download_dir: /opt/src
+mesos_url: {{mirror_base_url}}/mesos
+mesos_archive: mesos-{{mesos_version}}.tar.gz
+mesos_archive_url: "{{mesos_url}}/{{mesos_version}}/{{mesos_archive}}"
+mesos_md5: FF89748A6668425D462DCAA12608CF8A
+
+# Build vars
+mesos_lib_dir: /usr/local/lib/mesos
+mesos_bin_dir: "{{mesos_lib_dir}}"
+mesos_src_dir: /opt/src/mesos-{{mesos_version}}
+mesos_build_dir: /opt/src/mesos-{{mesos_version}}/build
+mesos_build_url: "{{repo_url}}/files"
+
+# Run vars
+mesos_conf_dir: /etc/mesos/conf
+master_work_dir: /var/lib/mesos
+agent_work_dir: /var/lib/mesos
+mesos_log_dir: /var/log/mesos
+
+# Conf vars
+mesos_cluster: Legion
+mesos_containerizers: mesos
+mesos_hostname: "{{ansible_hostname}}"
+mesos_quorum: 2
+mesos_zk: zk://{{ groups.masters | join(':' + zookeeper_client_port + ',')  }}:{{ zookeeper_client_port  }}/mesos

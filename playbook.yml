@@ -5,10 +5,9 @@
   roles:
     - common
     - ntp-client
-    - scala
-    - conda
     - { role: zookeeper, when: "'masters' in group_names" }
     - mesos
-    - docker
+#    - docker
     - hdfs
     - spark
+    - conda

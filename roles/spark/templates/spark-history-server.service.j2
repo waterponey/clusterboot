@@ -1,0 +1,16 @@
+# {{ansible_managed}}
+[Unit]
+Description=Apache Spark History server
+Documentation=http://spark.apache.org
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=forking
+User=spark
+ExecStart={{spark_home}}/sbin/start-history-server.sh
+ExecStop={{spark_home}}/sbin/stop-history-server.sh
+WorkingDirectory={{spark_workdir}}
+
+[Install]
+WantedBy=multi-user.target

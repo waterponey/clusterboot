@@ -1,12 +1,19 @@
 ---
-zookeeper_version: 3.4.6
+zk_version: 3.4.9
+zk_download_dir: /opt/src
+zk_url:  "{{mirror_base_url}}/zookeeper/zookeeper-{{zk_version}}"
+zk_archive: zookeeper-{{zk_version}}.tar.gz
+zk_archive_url: "{{zk_url}}/{{zk_archive}}"
+zk_md5: 3e8506075212c2d41030d874fcc9dcd2
+
+zk_home: /var/run/zookeeper
+zk_lib_dir: /usr/local/lib
+zk_conf_dir: /etc/zookeeper/
 
 client_port: 2181
 init_limit: 10
 sync_limit: 5
 tick_time: 2000
 
-zookeeper_dir: /usr/lib/zookeeper
-zookeeper_data_dir: /var/lib/zookeeper
-zookeeper_log_dir: /var/log/zookeeper
-zookeeper_conf_dir: /etc/zookeeper/conf
+zk_data_dir: /var/lib/zookeeper
+zk_log_dir: /var/log/zookeeper
