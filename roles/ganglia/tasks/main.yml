@@ -1,0 +1,56 @@
+###
+- name: monitoring package installed
+  yum: name=ganglia-gmond state=latest
+
+- name: setup cluster name for workers
+  lineinfile:
+    dest: /etc/ganglia/gmond.conf
+    regexp: '^  name ='
+    line: '  name = \"cluster\"'
+    insertafter: '^cluster'
+  when: "'slaves' in group_names"
+
+- name: ensure server name is the right one
+  lineinfile:
+    dest: /etc/ganglia/gmond.conf
+    line: '  override_hostname = \"{{inventory_hostname}}\"'
+    insertafter: '^  # override_hostname ='
+  when: "'slaves' in group_names"
+
+- name: launch gmond service
+  service: name=gmond state=restarted enabled=yes
+  when: "'slaves' in group_names"
+
+- name: install collector package
+  yum: name={{item}} state=latest
+  with_items:
+    - ganglia-gmetad
+    - ganglia-web
+  when: "'monitor' in group_names"
+
+- name: configure collector
+  lineinfile:
+    dest: /etc/ganglia/gmetad.conf
+    line: 'datasource "cluster" 1 {{item}}'
+    insertafter: '^# data_source'
+  with_items: "{{groups['slaves']}}"
+  when: "'monitor' in group_names"
+
+- name: configure gridname
+  lineinfile:
+    dest: /etc/ganglia/gmetad.conf
+    line: 'gridname \"Legion\"'
+    insertafter: '^# gridname'
+  when: "'monitor' in group_names"
+
+- name: start collector service
+  service: name=gmetad state=restarted enabled=yes
+  when: "'monitor' in group_names"
+
+- name: disable httpd security
+  template: src=ganglia.conf.j2 dest=/etc/httpd/conf.d/ganglia.conf
+  when: "'monitor' in group_names"
+
+- name: start httpd server
+  service: name=httpd state=restarted enabled=yes
+  when: "'monitor' in group_names"
