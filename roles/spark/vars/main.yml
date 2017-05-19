@@ -26,3 +26,9 @@ history_hostname: "{{hostvars[groups['masters'][2]]['inventory_hostname']}}"
 
 spark_log_dir: /var/log/spark
 spark_run_dir: /var/run/spark
+spark_tmp_dirs:
+  - /tmp
+# Here you should add a list of directory on different devices like :
+# - /data/disk1/spill
+# - /data/disk2/spill
+# - /data/disk3/spill

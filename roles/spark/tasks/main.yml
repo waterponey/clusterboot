@@ -70,6 +70,16 @@
     system: yes
     home: "{{spark_workdir}}"
 
+- name: Create spark tmp dir
+  file:
+    path: "{{item}}"
+    owner: root
+    group: root
+    mode: 0777
+    state: directory
+  with_items: "{{spark_tmp_dirs}}"
+  when: "'slaves' in group_names"
+
 - name: Add History-server service
   template:
     src: spark-history-server.service.j2
