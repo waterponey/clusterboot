@@ -1,0 +1,21 @@
+---
+# Download conf
+zep_version: 0.7.2
+zep_download_dir: /opt/src
+zep_url: "{{mirror_base_url}}/zeppelin"
+zep_version_name: zeppelin-{{zep_version}}-bin-all
+zep_archive_file: "{{zep_version_name}}.tgz"
+zep_download_url: "{{zep_url}}/zeppelin-{{zep_version}}/{{zep_archive_file}}"
+
+# Install conf
+zep_lib_dir: "/usr/local/lib"
+zep_target: "{{zep_lib_dir}}/{{zep_version_name}}"
+zep_home: "{{zep_lib_dir}}/zeppelin"
+zep_conf_dir: "{{zep_home}}/conf"
+zep_bin_dir: "/usr/local/bin"
+zep_workdir: "/var/lib/zep"
+
+# Spark-env conf
+spark_home: /usr/local/lib/spark
+zep_log_dir: /var/log/zeppelin
+zep_run_dir: /var/run/zeppelin

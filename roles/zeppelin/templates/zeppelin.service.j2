@@ -1,0 +1,16 @@
+[Unit]
+Description=Apache Zeppelin service
+Documentation=https://zeppelin.apache.org
+
+[Service]
+Type=forking
+User=zeppelin
+Group=zeppelin
+WorkingDirectory={{zep_home}}
+ExecStart={{zep_home}}/bin/zeppelin-daemon.sh start
+ExecRestart={{zep_home}}/bin/zeppelin-daemon.sh restart
+ExecReload={{zep_home}}/bin/zeppelin-daemon.sh reload
+ExecStop={{zep_home}}/bin/zeppelin-daemon.sh stop
+
+[Install]
+WantedBy=multi-user.target

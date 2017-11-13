@@ -1,0 +1,60 @@
+---
+- name: Ensure download directory exists
+  file: path={{zep_download_dir}} state=directory recurse=yes
+
+- name: Download binary
+  get_url:
+    url: "{{zep_download_url}}"
+    dest: "{{zep_download_dir}}/{{zep_archive_file}}"
+
+- name: create zeppelin user to manage daemon
+  user:
+    name: zeppelin
+    groups: hadoop
+    append: yes
+    system: yes
+    home: "{{zep_workdir}}"
+
+- name: Extract zeppelin
+  unarchive: 
+    src: "{{zep_download_dir}}/{{zep_archive_file}}"
+    dest: "{{zep_lib_dir}}"
+    owner: zeppelin
+    group: zeppelin
+    copy: no
+    creates: "{{zep_target}}"
+
+- name: Link generic zeppelin dir to specific version directory
+  file:
+    path: "{{zep_home}}"
+    src: "{{zep_target}}"
+    state: link
+
+- name: add zeppelin binaries to path
+  lineinfile:
+    dest: /etc/profile
+    line: export PATH=/{{zep_home}}/bin:$PATH
+
+- name: ensure log & run directories exists
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: zeppelin
+    group: zeppelin
+    mode: 0744
+  with_items:
+    - "{{zep_log_dir}}"
+    - "{{zep_run_dir}}"
+
+- name: add configuration file
+  template: 
+    src: zeppelin-env.sh.j2
+    dest: "{{zep_conf_dir}}/zeppelin-env.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: add zeppelin service
+  template:
+    src: zeppelin.service.j2
+    dest: /etc/systemd/system/zeppelin.service

@@ -3,7 +3,7 @@ mesos_version: 1.1.0
 
 # Download vars
 mesos_download_dir: /opt/src
-mesos_url: {{mirror_base_url}}/mesos
+mesos_url: "{{mirror_base_url}}/mesos"
 mesos_archive: mesos-{{mesos_version}}.tar.gz
 mesos_archive_url: "{{mesos_url}}/{{mesos_version}}/{{mesos_archive}}"
 mesos_md5: FF89748A6668425D462DCAA12608CF8A

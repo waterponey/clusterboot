@@ -1,3 +1,8 @@
+#- name: Correct /etc/hosts file
+#  lineinfile:
+#    dest: /etc/hosts
+#    line: "{{ansible_default_ipv4.address}} {{inventory_hostname}} {{ansible_hostname}}"
+
 - name: Check DNS resolver
   lineinfile: dest=/etc/resolv.conf regexp='^nameserver' line='nameserver {{ dns_ip }}'
 
@@ -8,7 +13,7 @@
     state: absent
 
 - name: Physically clean repositories
-  file: path=/etc/yum.repos.d state=absent
+  file: path=/etc/yum.repos.d/* state=absent
   when: is_offline == True
 
 - name: Initiate repositories
