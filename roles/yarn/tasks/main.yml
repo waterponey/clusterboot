@@ -1,0 +1,65 @@
+---
+- user:
+    name: yarn
+    group: hadoop
+    createhome: no
+    system: yes
+
+- name: Write configuration files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ hadoop_conf_dir }}/{{ item }}"
+    owner: yarn
+    group: hadoop
+  with_items:
+    - mapred-site.xml
+    - yarn-site.xml
+    - slaves
+    - masters
+
+- name: Ensure YARN state information directory exists
+  file:
+    path: "{{ yarn_workdir }}"
+    state: directory
+    owner: yarn
+    group: hadoop
+    mode: 0755
+
+- name: Add Resource Manager service file
+  template:
+    src: resource-manager.service.j2
+    dest: /etc/systemd/system/resource-manager.service
+  when: "inventory_hostname == resource_manager_hostname"
+
+- name: Add Node Manager service file
+  template:
+    src: node-manager.service.j2
+    dest: /etc/systemd/system/node-manager.service
+  when: "'slaves' in group_names"
+
+- name: Add Job History Server service file
+  template:
+    src: job-history-server.service.j2
+    dest: /etc/systemd/system/job-history-server.service
+  when: "inventory_hostname == job_history_server_hostname"
+
+- name: Start Resource Manager
+  service:
+    name: resource-manager
+    enabled: yes
+    state: started
+  when: "inventory_hostname == resource_manager_hostname"
+
+- name: Start Node manager
+  service:
+    name: node-manager
+    enabled: yes
+    state: started
+  when: "'slaves' in group_names"
+
+- name: Start Job History Server
+  service:
+    name: job-history-server
+    enabled: yes
+    state: started
+  when: "inventory_hostname == job_history_server_hostname"

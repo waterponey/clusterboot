@@ -1,0 +1,17 @@
+# {{ansible_managed}}
+[Unit]
+Description=Apache Hadoop Proxy Server service
+Documentation=http://hadoop.apache.org
+Requires=network.target remote-fs.target zookeeper.service
+After=network.target remote-fs.target zookeeper.service
+
+[Service]
+Type=forking
+User=yarn
+Group=hadoop
+ExecStart={{ hadoop_home }}/sbin/yarn-daemon.sh start proxyserver
+ExecStop={{ hadoop_home }}/sbin/yarn-daemon.sh stop proxyserver
+WorkingDirectory={{ yarn_workdir }}
+
+[Install]
+WantedBy=multi-user.target

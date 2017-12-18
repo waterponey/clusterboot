@@ -1,0 +1,19 @@
+---
+# Hadoop directories
+hadoop_home: /usr/local/hadoop
+hadoop_conf_dir: /etc/hadoop
+hadoop_log_dir: /var/log/hadoop
+
+yarn_workdir: /var/local/yarn
+
+# Global architecture
+resource_manager_hostname: "{{ hostvars[groups['masters'][0]]['inventory_hostname'] }}"
+job_history_server_hostname: "{{ hostvars[groups['masters'][1]]['inventory_hostname'] }}"
+
+# yarn-env.sh variables
+
+# mapred-env.sh variables
+
+# mapred-site.xml variables
+
+# yarn-site.xml variables list here the relevant directories

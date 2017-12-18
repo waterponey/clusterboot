@@ -1,0 +1,17 @@
+# {{ansible_managed}}
+[Unit]
+Description=Apache Hadoop Node Manager service
+Documentation=http://hadoop.apache.org
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=forking
+User=yarn
+Group=hadoop
+ExecStart={{ hadoop_home }}/sbin/yarn-daemon.sh start nodemanager
+ExecStop={{ hadoop_home }}/sbin/yarn-daemon.sh stop nodemanager
+WorkingDirectory={{ yarn_workdir }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+# {{ansible_managed}}
+[Unit]
+Description=Apache Hadoop Job History Server service
+Documentation=http://hadoop.apache.org
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=forking
+User=yarn
+Group=hadoop
+ExecStart={{ hadoop_home }}/sbin/mr-jobhistory-daemon.sh start historyserver
+ExecStop={{ hadoop_home }}/sbin/mr-jobhistory-daemon.sh stop historyserver
+WorkingDirectory={{ yarn_workdir }}
+
+[Install]
+WantedBy=multi-user.target
