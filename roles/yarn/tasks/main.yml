@@ -14,8 +14,6 @@
   with_items:
     - mapred-site.xml
     - yarn-site.xml
-    - slaves
-    - masters
 
 - name: Ensure YARN state information directory exists
   file:
