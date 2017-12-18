@@ -9,8 +9,9 @@ After=network.target remote-fs.target zookeeper.service
 Type=forking
 User=hdfs
 Group=hadoop
-ExecStart={{hadoop_home}}/sbin/hadoop-daemon.sh start secondarynamenode
-WorkingDirectory={{hdfs_workdir}}
+ExecStart={{ hadoop_home }}/sbin/hadoop-daemon.sh start secondarynamenode
+ExecStop={{ hadoop_home }}/sbin/hadoop-daemon.sh stop secondarynamenode
+WorkingDirectory={{ hdfs_workdir }}
 
 [Install]
 WantedBy=multi-user.target

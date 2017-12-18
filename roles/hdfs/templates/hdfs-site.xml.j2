@@ -20,19 +20,19 @@
 <configuration>
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>file://{{namenode_dirs | join(',file://')}}</value>
-  </property>>
+    <value>file://{{ namenode_dirs | join(',file://') }}</value>
+  </property>
   <property>
     <name>dfs.namenode.checkpoint.dir</name>
-    <value>file://{{secondnn_dirs | join(',file://')}}</value>
+    <value>file://{{ secondar_namenode_dirs | join(',file://') }}</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>file://{{datanode_dirs | join(',file://')}}</value>
+    <value>file://{{ datanode_dirs | join(',file://') }}</value>
   </property>
   <property>
     <name>dfs.datanode.failed.volumes.tolerated</name>
-    <value>{{failed_volumes}}</value>
+    <value>{{ failed_volumes }}</value>
   </property>
   <property>
      <name>dfs.permissions.superusergroup</name>

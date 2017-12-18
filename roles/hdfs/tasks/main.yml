@@ -1,80 +1,19 @@
 ---
-- name: Install package
-  yum: name={{item}} state=latest
-  with_items:
-    - libselinux-python
-    - java-1.8.0-openjdk-devel
-    - nmap-ncat
-    - lzo-devel
-
-- group: name=hadoop system=yes
-- group: name=hdfs system=yes
-- group: name=yarn system=yes
-
 - user:
-    name: hadoop
+    name: hdfs
     group: hadoop
     createhome: no
     system: yes
 
-- user:
-    name: hdfs
-    group: hdfs
-    groups: hadoop
-    home: "{{hdfs_workdir}}"
-    system: yes
-
-- user:
-    name: yarn
-    group: yarn
-    groups: hadoop
-    home: "{{yarn_workdir}}"
-    system: yes
-
-- name: Ensure download directory exists
-  file: path={{hadoop_download_dir}} state=directory
-
-- name: Ensure hadoop directories exists
-  file: path={{item}} state=directory
-  with_items:
-    - "{{hadoop_lib_dir}}"
-    - "{{hadoop_conf_dir}}"
-
-- name: Ensure hadoop log directories exists
-  file:
-    path: "{{hadoop_log_dir}}"
-    state: directory
-    owner: hadoop
-    group: hadoop
-    mode: 0774
-
-- name: Download hadoop binary
-  get_url:
-    url: "{{hadoop_archive_url}}"
-    dest: "{{hadoop_download_dir}}/{{hadoop_archive}}"
-    checksum: md5:{{hadoop_md5}}
-
-- name: Unarchive hadoop archive
-  unarchive:
-    src: "{{hadoop_download_dir}}/{{hadoop_archive}}"
-    dest: "{{hadoop_lib_dir}}"
-    copy: no
-    owner: hadoop
-    group: hadoop
-    creates: "{{hadoop_lib_dir}}/hadoop-{{hadoop_version}}"
-
-- name: Link generic hadoop dir to specific version directory
-  file:
-    path: "{{hadoop_home}}"
-    src: "{{hadoop_home}}-{{hadoop_version}}"
-    owner: hadoop
-    group: hadoop
-    state: link
+- name: Add HADOOP_CONF_DIR as environment variable
+  lineinfile:
+    dest: /etc/profile
+    line: "export HADOOP_CONF_DIR={{ hadoop_conf_dir }}"
 
 - name: Write configuration files
   template:
-    src: "{{item}}.j2"
-    dest: "{{hadoop_conf_dir}}/{{item}}"
+    src: "{{ item }}.j2"
+    dest: "{{ hadoop_conf_dir }}/{{ item }}"
     owner: hadoop
     group: hadoop
   with_items:
@@ -82,125 +21,124 @@
     - core-site.xml
     - hdfs-site.xml
     - log4j.properties
+    - slaves
+    - masters
 
-- name: Remove old conf
-  file:
-    path: "{{hadoop_home}}/etc/hadoop"
-    state: absent
-
-- name: Link configuration directories
-  file:
-    path: "{{hadoop_home}}/etc/hadoop"
-    src: "{{hadoop_conf_dir}}"
-    state: link
-    force: yes
-
-- name: add hadoop binaries in PATH
+- name: Add hadoop binaries in PATH
   lineinfile:
     dest: /etc/profile
-    line: export PATH={{hadoop_home}}/bin:{{hadoop_home}}/sbin:$PATH
+    line: 'export PATH={{ hadoop_home }}/bin:{{ hadoop_home }}/sbin:$PATH'
 
-- name: Create namenode data directory
+- name: Create Namenode data directory
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: directory
     owner: hdfs
     group: hadoop
     recurse: yes
     mode: 0700
-  with_items: "{{namenode_dirs}}"
+  with_items: "{{ namenode_dirs }}"
   when: "inventory_hostname == namenode_hostname"
 
-- name: Create secondary data directory
+- name: Create Secondary Namenode data directory
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: directory
     owner: hdfs
     group: hadoop
     recurse: yes
     mode: 0700
-  with_items: "{{secondnn_dirs}}"
+  with_items: "{{ secondnn_dirs }}"
   when: "inventory_hostname == secondnn_hostname"
 
-- name: Add namenode service file
+- name: Ensure HDFS state information directory exists
+  file:
+    path: "{{ hdfs_workdir }}"
+    state: directory
+    owner: hdfs
+    group: hadoop
+    mode: 0755
+
+- name: Add Namenode service file
   template:
     src: namenode.service.j2
     dest: /etc/systemd/system/namenode.service
   when: "inventory_hostname == namenode_hostname"
 
-- name: Add secondary service file
+- name: Add Secondary Namenode service file
   template:
-    src: secondary.service.j2
-    dest: /etc/systemd/system/secondary.service
-  when: "inventory_hostname == secondnn_hostname"
+    src: secondary-namenode.service.j2
+    dest: /etc/systemd/system/secondary-namenode.service
+  when: "inventory_hostname == secondary_namenode_hostname"
 
-- name: Create datanode data directory
+- name: Create Datanode data directory
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: directory
     owner: hdfs
     group: hadoop
     recurse: yes
     mode: 0700
-  with_items: "{{datanode_dirs}}"
+  with_items: "{{ datanode_dirs }}"
   when: "'slaves' in group_names"
 
-- name: Add datanode service file
+- name: Add Datanode service file
   template:
     src: datanode.service.j2
     dest: /etc/systemd/system/datanode.service
   when: "'slaves' in group_names"
 
-- name: Format namenode
-  shell: "{{hadoop_home}}/bin/hdfs namenode -format"
+- name: Format Namenode
+  shell: "{{ hadoop_home }}/bin/hdfs namenode -format"
   become_user: hdfs
   when:
     - "inventory_hostname == namenode_hostname"
-    - bootstrap
+    - bootstrap == True
 
-- name: Start namenode
+- name: Start Namenode
   service:
     name: namenode
     enabled: yes
     state: started
   when: "inventory_hostname == namenode_hostname"
 
-- name: Start secondary namenode
+- name: Start Secondary Namenode
   service:
-    name: secondary
+    name: secondary-namenode
     enabled: yes
     state: started
-  when: "inventory_hostname == secondnn_hostname"
+  when: "inventory_hostname == secondary_namenode_hostname"
 
-- name: Start datanode
+- name: Start Datanode
   service:
     name: datanode
     enabled: yes
     state: started
   when: "'slaves' in group_names"
 
-- name: add hadoop user to group
+- name: Add Hadoop user to group
   user:
-    name: "{{item}}"
+    name: "{{ item }}"
     append: yes
     groups: hadoop
-  with_items: "{{hadoop_users}}"
+  with_items: "{{ hadoop_users }}"
 
 - name: Create base directories
-  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir {{item}}"
+  shell: "{{ hadoop_home }}/bin/hadoop fs -mkdir {{ item }}"
   become_user: hdfs
   when:
     - "inventory_hostname == namenode_hostname"
-    - bootstrap
+    - bootstrap == True
   with_items:
     - /shared
     - /tmp
     - /user
+    - /var
 
 - name: Create user directories
-  shell: "{{hadoop_home}}/bin/hadoop fs -mkdir /user/{{item}}"
-  become_user: "{{item}}"
+  shell: "{{ hadoop_home }}/bin/hadoop fs -mkdir /user/{{ item }}"
+  become_user: "{{ item }}"
   when:
     - "inventory_hostname == namenode_hostname"
-    - bootstrap
-  with_items: "{{hadoop_users}}"
+    - bootstrap == True
+  with_items: "{{ hadoop_users }}"
