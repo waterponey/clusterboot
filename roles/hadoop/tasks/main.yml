@@ -1,0 +1,124 @@
+---
+- name: Download Hadoop's source code
+  url: "{{ hadoop_src_archive_url }}"
+    dest: "{{ download_dir }}/{{ hadoop_src_archive }}"
+    checksum: md5:"{{ hadoop_src_md5 }}"
+  when: build_hadoop == True
+
+- name: Unarchive Hadoop's source code archive
+  unarchive:
+    src: "{{ download_dir }}/{{ hadoop_archive }}"
+    dest: "{{ download_dir }}"
+    copy: no
+    creates: "{{ download_dir }}/hadoop-{{ hadoop_version }}"
+  when: build_hadoop == True
+
+- name: Install dependency packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - libselinux-python
+    - nmap-ncat
+    - maven
+    - gcc
+    - gcc-c++
+    - snappy
+    - snappy-devel
+    - bzip2
+    - bzip2-devel
+    - bzip2-libs
+    - lz4
+    - lz4-devel
+    - zlib
+    - zlib-devel
+    - lzo
+    - lzo-devel
+    - automake
+    - libtool
+    - openssl
+    - openssl-devel
+    - fuse
+    - fuse-devel
+    - cmake
+    - protobuf
+    - protobuf-devel
+    - protobuf-compiler
+    - zstd
+    - libzstd
+    - libzstd-devel
+    - jansson-devel
+    - jansson
+    - lzop
+    - autoconf
+  when: build_hadoop == True
+
+- name: Install dependency packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - libselinux-python
+    - java-1.8.0-openjdk-devel
+    - nmap-ncat
+    - lzo-devel
+
+- name: Build Hadoop from source code
+  command: mvn package -Pdist,native -Drequire.snappy -Drequire.openssl -DskipTests -Dtar
+  args:
+    chdir: "{{ download_dir }}/hadoop-{{ hadoop_version }}"
+  when: build_hadoop == True
+
+- group:
+    name: hadoop
+    system: yes
+
+- user:
+    name: hadoop
+    group: hadoop
+    createhome: no
+    system: yes
+
+- name: Ensure Hadoop directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: hadoop
+    group: hadoop
+    mode: 0774
+  with_items:
+    - "{{ hadoop_home }}"
+    - "{{ hadoop_conf_dir }}"
+    - "{{ hadoop_log_dir }}"
+
+- name: Copy Hadoop binary archive
+  copy:
+    src: "{{ download_dir }}/hadoop-{{ hadoop_version }}/hadoop-dist/target/hadoop-{{ hadoop_version }}.tar.gz"
+    dest: "{{ hadoop_home }}-{{ hadoop_version }}.tar.gz"
+  when: build_hadoop == True
+
+- name: Download hadoop binary
+  get_url:
+    url: "{{ hadoop_bin_archive_url }}"
+    dest: "{{ download_dir }}/{{ hadoop_bin_archive }}"
+    checksum: md5:"{{ hadoop_bin_md5 }}"
+  when: build_hadoop == False
+
+- name: Unarchive hadoop archive
+  unarchive:
+    src: "{{ hadoop_home }}-{{ hadoop_version }}.tar.gz"
+#    dest: "/usr/local"
+    dest: "{{ hadoop_home }}-{{ hadoop_version }}"
+    copy: no
+    owner: hadoop
+    group: hadoop
+#    creates: "{{ hadoop_home }}-{{ hadoop_version }}"
+
+- name: Link generic hadoop directory to specific version directory
+  file:
+    path: "{{ hadoop_home }}"
+    src: "{{ hadoop_home }}-{{ hadoop_version }}"
+    owner: hadoop
+    group: hadoop
+    state: link
+    force: yes

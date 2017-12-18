@@ -1,0 +1,16 @@
+---
+# Download configuration
+hadoop_version: 2.7.4
+hadoop_url: "http://apache.mediamirrors.org/hadoop/common"
+hadoop_src_archive: "hadoop-{{ hadoop_version }}-src.tar.gz"
+hadoop_bin_archive: "hadoop-{{ hadoop_version }}.tar.gz"
+hadoop_src_archive_url: "{{ hadoop_url }}/hadoop-{{ hadoop_version }}/{{ hadoop_src_archive }}"
+hadoop_bin_archive_url: "{{ hadoop_url }}/hadoop-{{ hadoop_version }}/{{ hadoop_bin_archive }}"
+hadoop_src_md5: 93424b23e4203db31ed4e7b4eaf0ac1e
+hadoop_bin_md5: ee3cc9f384b787ac13ad3b1335920924
+download_dir: /opt/src
+
+# Hadoop directories
+hadoop_home: /usr/local/hadoop
+hadoop_conf_dir: /etc/hadoop
+hadoop_log_dir: /var/log/hadoop

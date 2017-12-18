@@ -7,6 +7,9 @@
 # Do you have internet access on your cluster ?
 is_offline: false
 
+# Build Hadoop from source
+build_hadoop: false
+
 # This should stay as false. Will Format HDFS otherwise
 bootstrap: false
 
